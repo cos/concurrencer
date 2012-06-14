@@ -1,0 +1,495 @@
+This is pdfTeX, Version 3.1415926-1.40.9 (MiKTeX 2.7) (preloaded format=latex 2009.4.25)  23 MAY 2009 12:12
+entering extended mode
+**concurrencer_ICSE09.tex
+(concurrencer_ICSE09.tex
+LaTeX2e <2005/12/01>
+Babel <v3.8l> and hyphenation patterns for english, dumylang, nohyphenation, ge
+rman, ngerman, german-x-2008-06-18, ngerman-x-2008-06-18, french, loaded.
+("C:\Program Files\MiKTeX 2.7\tex\latex\base\article.cls"
+Document Class: article 2005/09/16 v1.4f Standard LaTeX document class
+("C:\Program Files\MiKTeX 2.7\tex\latex\base\size10.clo"
+File: size10.clo 2005/09/16 v1.4f Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (latex8.sty
+IEEE 8.5 x 11-Inch Proceedings Style `latex8.sty'.
+\@ctmp=\skip43
+\@figindent=\skip44
+) ("C:\Program Files\MiKTeX 2.7\tex\latex\amsmath\amsmath.sty"
+Package: amsmath 2000/07/18 v2.13 AMS math features
+\@mathmargin=\skip45
+
+For additional information on amsmath, use the `?' option.
+("C:\Program Files\MiKTeX 2.7\tex\latex\amsmath\amstext.sty"
+Package: amstext 2000/06/29 v2.01
+
+("C:\Program Files\MiKTeX 2.7\tex\latex\amsmath\amsgen.sty"
+File: amsgen.sty 1999/11/30 v2.0
+\@emptytoks=\toks14
+\ex@=\dimen103
+))
+("C:\Program Files\MiKTeX 2.7\tex\latex\amsmath\amsbsy.sty"
+Package: amsbsy 1999/11/29 v1.2d
+\pmbraise@=\dimen104
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\amsmath\amsopn.sty"
+Package: amsopn 1999/12/14 v2.01 operator names
+)
+\inf@bad=\count87
+LaTeX Info: Redefining \frac on input line 211.
+\uproot@=\count88
+\leftroot@=\count89
+LaTeX Info: Redefining \overline on input line 307.
+\classnum@=\count90
+\DOTSCASE@=\count91
+LaTeX Info: Redefining \ldots on input line 379.
+LaTeX Info: Redefining \dots on input line 382.
+LaTeX Info: Redefining \cdots on input line 467.
+\Mathstrutbox@=\box26
+\strutbox@=\box27
+\big@size=\dimen105
+LaTeX Font Info:    Redeclaring font encoding OML on input line 567.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
+\macc@depth=\count92
+\c@MaxMatrixCols=\count93
+\dotsspace@=\muskip10
+\c@parentequation=\count94
+\dspbrk@lvl=\count95
+\tag@help=\toks15
+\row@=\count96
+\column@=\count97
+\maxfields@=\count98
+\andhelp@=\toks16
+\eqnshift@=\dimen106
+\alignsep@=\dimen107
+\tagshift@=\dimen108
+\tagwidth@=\dimen109
+\totwidth@=\dimen110
+\lineht@=\dimen111
+\@envbody=\toks17
+\multlinegap=\skip46
+\multlinetaggap=\skip47
+\mathdisplay@stack=\toks18
+LaTeX Info: Redefining \[ on input line 2666.
+LaTeX Info: Redefining \] on input line 2667.
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\psnfss\times.sty"
+Package: times 2005/04/12 PSNFSS-v9.2a (SPQR) 
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\comment\comment.sty"
+\CommentStream=\write3
+
+Excluding comment 'comment')
+("C:\Program Files\MiKTeX 2.7\tex\latex\amsfonts\amssymb.sty"
+Package: amssymb 2002/01/22 v2.2d
+
+("C:\Program Files\MiKTeX 2.7\tex\latex\amsfonts\amsfonts.sty"
+Package: amsfonts 2001/10/25 v2.2f
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 132.
+))
+("C:\Program Files\MiKTeX 2.7\tex\latex\base\ifthen.sty"
+Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\fancyvrb\fancyvrb.sty"
+Package: fancyvrb 2008/02/07
+
+Style option: `fancyvrb' v2.7a, with DG/SPQR fixes, and firstline=lastline fix 
+<2008/02/07> (tvz) ("C:\Program Files\MiKTeX 2.7\tex\latex\graphics\keyval.sty"
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks19
+)
+\FV@CodeLineNo=\count99
+\FV@InFile=\read1
+\FV@TabBox=\box28
+\c@FancyVerbLine=\count100
+\FV@StepNumber=\count101
+\FV@OutFile=\write4
+) ("C:\Program Files\MiKTeX 2.7\tex\latex\base\alltt.sty"
+Package: alltt 1997/06/16 v2.0g defines alltt environment
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\multirow\multirow.sty"
+\bigstrutjot=\dimen112
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\tools\xspace.sty"
+Package: xspace 2006/05/08 v1.12 Space after command names (DPC,MH)
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\graphics\graphicx.sty"
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files\MiKTeX 2.7\tex\latex\graphics\graphics.sty"
+Package: graphics 2006/02/20 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files\MiKTeX 2.7\tex\latex\graphics\trig.sty"
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\00miktex\graphics.cfg"
+File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: pdftex.def on input line 90.
+
+("C:\Program Files\MiKTeX 2.7\tex\latex\pdftex-def\pdftex.def"
+File: pdftex.def 2008/09/08 v0.04l Graphics/color for pdfTeX
+
+
+! Package pdftex.def Error: PDF mode expected, but DVI mode detected!
+(pdftex.def)                If you are using `latex', then call `pdflatex'.
+(pdftex.def)                Otherwise check and correct the driver options.
+(pdftex.def)                Error recovery by switching to PDF mode.
+
+See the pdftex.def package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.345     }\@ehc
+                
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+\Gread@gobject=\count102
+))
+\Gin@req@height=\dimen113
+\Gin@req@width=\dimen114
+) ("C:\Program Files\MiKTeX 2.7\tex\latex\ltxmisc\url.sty"
+\Urlmuskip=\muskip11
+Package: url 2006/04/12  ver 3.3  Verb mode for urls, etc.
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\graphics\color.sty"
+Package: color 2005/11/14 v1.0j Standard LaTeX Color (DPC)
+
+("C:\Program Files\MiKTeX 2.7\tex\latex\00miktex\color.cfg"
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: pdftex.def on input line 130.
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\base\makeidx.sty"
+Package: makeidx 2000/03/29 v1.0m Standard LaTeX package
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\cite\cite.sty"
+LaTeX Info: Redefining \cite on input line 149.
+LaTeX Info: Redefining \nocite on input line 214.
+Package: cite 2003/11/04  v 4.01
+)
+("C:\Program Files\MiKTeX 2.7\tex\latex\rotating\rotating.sty"
+Package: rotating 2008/10/05 v2.15c rotated objects in LaTeX
+\c@r@tfl@t=\count103
+\rotFPtop=\skip48
+\rotFPbot=\skip49
+\rot@float@box=\box29
+\rot@mess@toks=\toks20
+)
+(algorithm2e.sty
+Package: algorithm2e 2004/06/16
+\c@AlgoLine=\count104
+
+********************************************************
+Package `algorithm2e' Release 3.5 -- june 16 2004 --
+- algorithm2e-announce@lirmm.fr mailing list for announcement about releases
+- algorithm2e-discussion@lirmm.fr mailing list for discussion about package
+subscribe by emailing sympa@lirmm.fr with 'subscribe <list> <firstname name>'
+- Author: Christophe Fiorio (fiorio@lirmm.fr)
+********************************************************
+\skiptotal=\skip50
+\skiprule=\skip51
+\skiphlne=\skip52
+\skiptext=\skip53
+\skiplength=\skip54
+\algomargin=\skip55
+\skipalgocfslide=\skip56
+\algowidth=\dimen115
+\inoutsize=\dimen116
+\inoutline=\dimen117
+\AlCapSkip=\skip57
+\algocf@inoutbox=\box30
+\algocf@inputbox=\box31
+\algocf@capbox=\box32
+\c@algocfline=\count105
+\c@algocf=\count106
+\algocf@algoframe=\box33
+\algocf@algobox=\box34
+) ("C:\Program Files\MiKTeX 2.7\tex\latex\ltxmisc\relsize.sty"
+Package: relsize 2003/07/04 ver 3.1
+)
+(concurrencer_ICSE09.aux)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 104.
+LaTeX Font Info:    ... okay on input line 104.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 104.
+LaTeX Font Info:    ... okay on input line 104.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 104.
+LaTeX Font Info:    ... okay on input line 104.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 104.
+LaTeX Font Info:    ... okay on input line 104.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 104.
+LaTeX Font Info:    ... okay on input line 104.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 104.
+LaTeX Font Info:    ... okay on input line 104.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 104.
+
+
+("C:\Program Files\MiKTeX 2.7\tex\latex\psnfss\ot1ptm.fd"
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+("C:\Program Files\MiKTeX 2.7\tex\context\base\supp-pdf.tex"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count107
+\scratchdimen=\dimen118
+\scratchbox=\box35
+\nofMPsegments=\count108
+\nofMParguments=\count109
+\everyMPshowfont=\toks21
+\MPscratchCnt=\count110
+\MPscratchDim=\dimen119
+\MPnumerator=\count111
+\everyMPtoPDFconversion=\toks22
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 114.
+LaTeX Font Info:    Try loading font information for U+msa on input line 114.
+ ("C:\Program Files\MiKTeX 2.7\tex\latex\amsfonts\umsa.fd"
+File: umsa.fd 2002/01/19 v2.2g AMS font definitions
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 114.
+
+("C:\Program Files\MiKTeX 2.7\tex\latex\amsfonts\umsb.fd"
+File: umsb.fd 2002/01/19 v2.2g AMS font definitions
+)
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 114.
+
+
+("C:\Program Files\MiKTeX 2.7\tex\latex\psnfss\omsptm.fd"
+File: omsptm.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 114.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 117.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 120.
+
+
+("C:\Program Files\MiKTeX 2.7\tex\latex\psnfss\ot1pcr.fd"
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+LaTeX Font Info:    Font shape `OT1/pcr/m/it' in size <8> not available
+(Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 120.
+
+Underfull \hbox (badness 1147) in paragraph at lines 118--127
+\OT1/ptm/m/it/10 fi-ciently on mul-ti-cores is hard. The Java 5 pack-age
+ []
+
+
+Underfull \hbox (badness 1221) in paragraph at lines 206--218
+[][]\OT1/ptm/m/n/10 This pa-per presents our ap-proach for in-cre-men-tally
+ []
+
+
+Underfull \hbox (badness 3826) in paragraph at lines 206--218
+\OT1/ptm/m/n/10 retrofitting par-al-lelism through a se-ries of behavior-
+ []
+
+[1{C:/Documents and Settings/All Users/Application Data/MiKTeX/2.7/pdftex/confi
+g/pdftex.map}
+
+
+]
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 278.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 278.
+
+<./figs/ConvertToAtomicInteger.jpg, id=11, 1028.84375pt x 771.88374pt>
+File: ./figs/ConvertToAtomicInteger.jpg Graphic file (type jpg)
+
+<use ./figs/ConvertToAtomicInteger.jpg>
+Underfull \hbox (badness 1354) in paragraph at lines 352--352
+[][]\OT1/ptm/m/n/10 Figure 1: Us-ing \OT1/ptm/m/sc/8 Con-cur-rencer \OT1/ptm/m/
+n/10 to con-vert an \OT1/pcr/m/n/8 int \OT1/ptm/m/n/10 to
+ []
+
+[2]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 448.
+LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <8> not available
+(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 448.
+
+Overfull \hbox (7.10384pt too wide) in paragraph at lines 447--462
+ [][][] 
+ []
+
+
+Underfull \hbox (badness 2753) in paragraph at lines 539--546
+[][]\OT1/ptm/m/n/10 Before the in-tro-duc-tion of \OT1/pcr/m/n/8 j.u.c.\OT1/ptm
+/m/n/10 , a pro-gram-mer
+ []
+
+
+Underfull \hbox (badness 2326) in paragraph at lines 539--546
+\OT1/ptm/m/n/10 could cre-ate a thread-safe \OT1/pcr/m/n/8 HashMap \OT1/ptm/m/n
+/10 us-ing a syn-chro-
+ []
+
+
+Underfull \hbox (badness 4899) in paragraph at lines 539--546
+\OT1/ptm/m/n/10 nized wrap-per over a \OT1/pcr/m/n/8 HashMap \OT1/ptm/m/n/10 (e
+.g., \OT1/pcr/m/n/8 Collections-
+ []
+
+[3 <C:/workspaces/ConcurrencyRefactorings/mit.edu.concurrencyRefactorings/paper
+/figs/ConvertToAtomicInteger.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 555--559
+\OT1/pcr/m/n/8 putIfAbsent(key, value)\OT1/ptm/m/n/10 , \OT1/pcr/m/n/8 replace(
+key, oldValue,
+ []
+
+
+Underfull \hbox (badness 1688) in paragraph at lines 564--567
+[][]\OT1/ptm/m/n/10 For ex-am-ple, \OT1/pcr/m/n/8 putIfAbsent \OT1/ptm/m/n/10 (
+1) checks whether the
+ []
+
+LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <7> not available
+(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 669.
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 669.
+
+("C:\Program Files\MiKTeX 2.7\tex\latex\psnfss\ot1phv.fd"
+File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
+)
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <7> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 669.
+
+Underfull \hbox (badness 1210) in paragraph at lines 690--690
+[][]\OT1/ptm/m/n/10 Figure 2: Ba-sic code pat-terns that are re-placed with
+ []
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 704.
+
+Underfull \hbox (badness 10000) detected at line 721
+[][]
+ []
+
+
+Underfull \hbox (badness 1259) in paragraph at lines 816--825
+\OT1/ptm/m/n/10 as the ar-gu-ment to \OT1/pcr/m/n/8 putIfAbsent\OT1/ptm/m/n/10 
+. Since the vari-able
+ []
+
+[4] [5]
+Underfull \hbox (badness 6141) in paragraph at lines 1104--1109
+\OT1/ptm/m/n/10 choice for the re-cur-sive tasks used in divide-and-
+ []
+
+
+Underfull \hbox (badness 2809) in paragraph at lines 1104--1109
+\OT1/ptm/m/n/10 conquer com-pu-ta-tions. The frame-work also de-fines
+ []
+
+
+Overfull \hbox (2.26389pt too wide) in paragraph at lines 1171--1171
+[]                                           \OT1/pcr/m/n/7 int[] whole) {[] 
+ []
+
+
+Underfull \hbox (badness 1194) in paragraph at lines 1309--1318
+\OT1/ptm/m/n/10 as-sem-bles the re-sult from the sub-re-sults of the tasks.
+ []
+
+[6]
+Underfull \hbox (badness 2772) in paragraph at lines 1319--1334
+\OT1/ptm/m/n/10 rewrites the im-ple-men-ta-tion of the orig-i-nal re-cur-sive
+ []
+
+
+Underfull \vbox (badness 1584) has occurred while \output is active []
+
+ [7]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/sc' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/sc' tried instead on input line 1419.
+
+
+[8]
+Underfull \hbox (badness 1314) in paragraph at lines 1489--1494
+[][]\OT1/ptm/m/n/10 We used \OT1/ptm/m/sc/7 Con-cur-rencer \OT1/ptm/m/n/10 to p
+ar-al-lelize six divide-and-
+ []
+
+
+Underfull \vbox (badness 5316) has occurred while \output is active []
+
+
+Underfull \hbox (badness 1622) in paragraph at lines 1532--1544
+\OT1/ptm/m/n/10 in-fix ex-pres-sions like \OT1/pcr/m/n/8 ++f \OT1/ptm/m/n/10 wi
+th \OT1/pcr/m/n/8 f.getAndIncrement()\OT1/ptm/m/n/10 ,
+ []
+
+[9]
+Overfull \hbox (6.46388pt too wide) in paragraph at lines 1594--1594
+[]  \OT1/pcr/m/n/7 Component existingComponent = components.get(subdomain);[] 
+ []
+
+
+Overfull \hbox (2.26389pt too wide) in paragraph at lines 1594--1594
+[]    \OT1/pcr/m/n/7 throw new ComponentException("Domain already taken");[] 
+ []
+
+
+Underfull \hbox (badness 1221) in paragraph at lines 1639--1639
+[][]\OT1/ptm/m/n/10 Table 4: Hu-man and \OT1/ptm/m/sc/8 Con-cur-rencer \OT1/ptm
+/m/n/10 omis-sions in us-
+ []
+
+[10]
+Underfull \hbox (badness 1062) in paragraph at lines 1787--1794
+\OT1/ptm/m/n/10 fea-tures pro-vided by \OT1/pcr/m/n/8 j.u.c.\OT1/ptm/m/n/10 . A
+mong oth-ers, \OT1/ptm/m/sc/7 Con-cur-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1803--1807
+ \OT1/ptm/b/n/10 Ac-knowl-edge-ments.[] []\OT1/ptm/m/n/10 We thank John Brant, 
+Adam
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1853--1855
+[][]\OT1/ptm/m/n/9 JSR-166y Spec-i-fi-ca-tion Re-quest for Java 7.
+ []
+
+[11] (concurrencer_ICSE09.aux) ) 
+Here is how much of TeX's memory you used:
+ 3417 strings out of 95305
+ 40946 string characters out of 1183059
+ 122550 words of memory out of 1500000
+ 6534 multiletter control sequences out of 110000
+ 46962 words of font info for 99 fonts, out of 1200000 for 2000
+ 19 hyphenation exceptions out of 8191
+ 28i,16n,26p,625b,497s stack positions out of 5000i,500n,10000p,200000b,5000s
+{C:/Program Files/MiKTeX 2.7/fonts/enc/dvips/fo
+ntname/8r.enc}<C:/Program Files/MiKTeX 2.7/fonts/type1/bluesky/cm/cmbx10.pfb><C
+:/Program Files/MiKTeX 2.7/fonts/type1/bluesky/cm/cmmi10.pfb><C:/Program Files/
+MiKTeX 2.7/fonts/type1/bluesky/cm/cmmi7.pfb><C:/Program Files/MiKTeX 2.7/fonts/
+type1/bluesky/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.7/fonts/type1/bluesky/cm/
+cmsy10.pfb><C:/Program Files/MiKTeX 2.7/fonts/type1/bluesky/cm/cmti10.pfb><C:/P
+rogram Files/MiKTeX 2.7/fonts/type1/urw/courier/ucrb8a.pfb><C:/Program Files/Mi
+KTeX 2.7/fonts/type1/urw/courier/ucrr8a.pfb><C:/Program Files/MiKTeX 2.7/fonts/
+type1/urw/courier/ucrro8a.pfb><C:/Program Files/MiKTeX 2.7/fonts/type1/urw/helv
+etic/uhvb8a.pfb><C:/Program Files/MiKTeX 2.7/fonts/type1/urw/times/utmb8a.pfb><
+C:/Program Files/MiKTeX 2.7/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files/
+MiKTeX 2.7/fonts/type1/urw/times/utmri8a.pfb>
+Output written on concurrencer_ICSE09.pdf (11 pages, 286866 bytes).
+PDF statistics:
+ 92 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 131072)
+ 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+

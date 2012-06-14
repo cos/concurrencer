@@ -1,0 +1,27 @@
+Figure 5: columns are mis-aligned.
+
+I don't think it's fair to call the incrementAndGet an error if it can't
+possibly cause a problem at run time, unless it's exposed as a differnce in
+a class's public API.
+
+===========================================================================
+
+I don't see a build file, so here are notes on building the paper.
+
+latex concurrencer_ICSE09
+latex concurrencer_ICSE09
+bibtex concurrencer_ICSE09
+latex concurrencer_ICSE09
+dvips concurrencer_ICSE09.dvi -o concurrencer_ICSE09.ps 
+ps2pdf concurrencer_ICSE09.ps
+
+
+Note that PDF can be created via
+
+  ps2pdf concurrencer_ICSE09.ps
+
+Do not use
+
+  dvipdfm concurrencer_ICSE09.dvi
+
+because of problems with figures overlapping the text.

@@ -1,0 +1,79 @@
+\relax 
+\citation{Lea:CPJ99,Goetz:JCP06}
+\citation{Lea:jsr166y,DougLea'00:forkJoinFramework}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}}
+\citation{Dig'08:studyOfConcurrentTransformations}
+\citation{Goetz:JCP06}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Convert Int to AtomicInteger}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}AtomicInteger in Java}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Code Transformations}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Using {\smaller  \textsc  {Concurrencer}}\xspace  to convert an {\smaller  \texttt  {int}}\xspace   to {\smaller  \texttt  {AtomicInteger}}\xspace   in Apache Tomcat. The screenshot shows a preview of the changes.}}{3}}
+\newlabel{fig:CounterExample}{{1}{3}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces {\smaller  \textsc  {Concurrencer}}\xspace  replaces accesses to field {\smaller  \texttt  {f}}\xspace   with calls to {\smaller  \texttt  {AtomicInteger}}\xspace   APIs ({\smaller  \texttt  {e}}\xspace   denotes an expression).}}{3}}
+\newlabel{tab:AtomicIntegerAccesses}{{1}{3}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}\hspace  {-.25em}\unhbox \voidb@x \hbox {Convert HashMap to ConcurrentHashMap}}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}ConcurrentHashMap in Java}{3}}
+\citation{Goetz:JCP06}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Code Transformations}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Basic code patterns that are replaced with {\smaller  \texttt  {map.putIfAbsent(key, value)}}\xspace  .}}{4}}
+\newlabel{fig:basicPatternsForPutIfAbsent}{{2}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces  The algorithm for deciding when to delete from the refactored code the $\mathit  {testValue}$ variable (i.e., the variable that holds the presumed $\mathit  {value}$ associated with a $\mathit  {key}$). $\mathit  {BEFORE\_PUT}$ denotes statements inside the if statement that preced the call to {\smaller  \texttt  {put}}\xspace  . $\mathit  {AFTER\_PUT}$ denotes statements that succeed the call to {\smaller  \texttt  {put}}\xspace   (both inside and outside the if statement). \vspace  {-3pt} }}{4}}
+\newlabel{fig:algorithmDeleteTestValue}{{3}{4}}
+\citation{Wolfe'96:CompilerTextbook}
+\citation{DoubleCheckedLazyInitialization}
+\citation{Rugina'99:automaticParallelization}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces The user selects the {\smaller  \texttt  {timeZoneLists}}\xspace   {\smaller  \texttt  {HashMap}}\xspace   field (line 2) to be made thread-safe, and Concurrencer performs all the transformations. The figure shows an example from Zimbra where the {\smaller  \texttt  {putIfAbsent}}\xspace   pattern requires invoking a creational method to hold the value to be placed in the map. The pattern elements in the original code have a gray background while the changes in the refactored code are underlined.}}{5}}
+\newlabel{fig:putIfAbsentWithCreateValue}{{4}{5}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Convert Recursion to ForkJoinTask}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}ForkJoinTask Framework in Java 7}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Sequential and parallel pseudocode for a divide-and-conquer algorithm.}}{6}}
+\newlabel{fig:DivideAndConquer}{{5}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Code Transformations}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces The programmer selects the divide-and-conquer method and provides the sequential threshold (\texttt  {whole.length < 100}). Concurrencer converts the sequential divide-and-conquer into a parallel one using the ForkJoinTask framework. The left-hand side shows the sequential version, the right-hand side shows the parallel version (changes are underlined).}}{7}}
+\newlabel{fig:MergeSort}{{6}{7}}
+\citation{Rugina'99:automaticParallelization}
+\citation{DougLea'00:forkJoinFramework}
+\citation{DougLea'00:forkJoinFramework}
+\citation{DougLea'00:forkJoinFramework,Freisleben'95:automatedTransformation,Rugina'99:automaticParallelization}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Discussion}{8}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Evaluation}{8}}
+\newlabel{sec:Evaluation}{{6}{8}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Case studies of refactorings. The last two columns show the number of lines of code that were changed to perform the refactoring, and how many of those lines can be changed by {\smaller  \textsc  {Concurrencer}}\xspace  . The remaining changes must be performed manually. }}{8}}
+\newlabel{tab:InputProgramsAndLOCchanged}{{2}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Methodology}{8}}
+\citation{DougLea'00:forkJoinFramework,Freisleben'95:automatedTransformation,Rugina'99:automaticParallelization}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Q1: Is {\smaller  \textsc  {Concurrencer}}\xspace  useful?}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Q2: How does manually and automatically refactored code compare?}{9}}
+\newlabel{sub:IsRefactoredCodeThreadSafe}{{6.3}{9}}
+\citation{Allen'84:PFC}
+\citation{Kennedy'91:ParaScope}
+\citation{Liao'99:SUIFExplorer}
+\citation{Freisleben'95:automatedTransformation}
+\citation{Bik'97:loopParallelizationInJava}
+\citation{Vaziri'06:atomicSets}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Human errors in using \texttt  {AtomicInteger} updates in refactorings performed by open-source developers.}}{10}}
+\newlabel{tab:ImproperAIUsages}{{3}{10}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Human and {\smaller  \textsc  {Concurrencer}}\xspace  omissions in using \texttt  {ConcurrentHashMap}'s \texttt  {putIfAbsent} and conditional \texttt  {remove}.}}{10}}
+\newlabel{tab:ImproperCHMUsages}{{4}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Q3: What is the speedup of the parallelized algorithms?}{10}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Related Work}{10}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Speedup of the parallelized divide-and-conquer algorithms.}}{10}}
+\newlabel{tab:DivideAndConquerAlgorithms}{{5}{10}}
+\citation{Balaban'05}
+\bibcite{Balaban'05}{1}
+\bibcite{Bik'97:loopParallelizationInJava}{2}
+\bibcite{Dig'08:studyOfConcurrentTransformations}{3}
+\bibcite{DoubleCheckedLazyInitialization}{4}
+\bibcite{Freisleben'95:automatedTransformation}{5}
+\bibcite{Goetz:JCP06}{6}
+\bibcite{Allen'84:PFC}{7}
+\bibcite{Lea:jsr166y}{8}
+\bibcite{Kennedy'91:ParaScope}{9}
+\bibcite{Lea:CPJ99}{10}
+\bibcite{DougLea'00:forkJoinFramework}{11}
+\bibcite{Liao'99:SUIFExplorer}{12}
+\bibcite{Rugina'99:automaticParallelization}{13}
+\bibcite{Vaziri'06:atomicSets}{14}
+\bibcite{Wolfe'96:CompilerTextbook}{15}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusions and Future Work}{11}}
+\@writefile{toc}{\contentsline {paragraph}{Acknowledgements.}{11}}

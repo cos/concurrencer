@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.jdt.core.IField"
+            id="mit.edu.concurrencyRefactorings.contribution1">
+         <menu
+               label="Concurrency Refactorings"
+               path="additions"
+               id="mit.edu.concurrencyRefactorings.menu1">
+            <separator
+                  name="atomics">
+            </separator>
+         </menu>
+         <action
+               label="Convert to AtomicInteger"
+               class="mit.edu.concurrencyrefactorings.popup.actions.ConvertIntToAtomicIntegerAction"
+               menubarPath="mit.edu.concurrencyRefactorings.menu1/atomics"
+               enablesFor="1"
+               id="mit.edu.concurrencyRefactorings.ConvertIntToAtomicIntegerAction">
+         </action>
+          <action
+               label="Convert to AtomicLong"
+               class="mit.edu.concurrencyrefactorings.popup.actions.ConvertLongToAtomicLongAction"
+               menubarPath="mit.edu.concurrencyRefactorings.menu1/atomics"
+               enablesFor="1"
+               id="mit.edu.concurrencyRefactorings.ConvertLongToAtomicLongAction">
+         </action>
+         <action
+               label="Convert to ConcurrentHashMap"
+               class="mit.edu.concurrencyrefactorings.popup.actions.ConvertHashMapToConcurrentAction"
+               menubarPath="mit.edu.concurrencyRefactorings.menu1/concurrents"
+               enablesFor="1"
+               id="mit.edu.concurrencyRefactorings.ConvertHashMapToConcurrentAction">
+         </action>
+      </objectContribution>
+
+	<objectContribution
+            objectClass="org.eclipse.jdt.core.IMethod"
+            id="mit.edu.concurrencyRefactorings.contribution1">
+         <menu
+               label="Concurrency Refactorings"
+               path="additions"
+               id="mit.edu.concurrencyRefactorings.menu3">
+            <separator
+                  name="FJTask">
+            </separator>
+         </menu>
+         <action
+               label="Convert Recursion to FJTask"
+               class="mit.edu.concurrencyrefactorings.popup.actions.ConvertToFJTaskAction"
+               menubarPath="mit.edu.concurrencyRefactorings.menu3/FJTask"
+               enablesFor="1"
+               id="mit.edu.concurrencyRefactorings.ConvertToFJTaskAction">
+         </action>
+      </objectContribution>
+      
+      <viewerContribution
+         targetID="#CompilationUnitEditorContext"
+         id="mit.edu.concurrencyRefactorings.EditorContribution">
+         <menu
+               label="Concurrency Refactorings"
+               path="additions"
+               id="mit.edu.concurrencyRefactorings.menu2">
+            <separator
+                  name="atomics">
+            </separator>
+         </menu>
+         <action
+             label="Convert to AtomicInteger"
+             class="mit.edu.concurrencyrefactorings.popup.actions.ConvertToAtomicIntegerEditorAction"
+             menubarPath="mit.edu.concurrencyRefactorings.menu2/atomics"
+             enablesFor="+"
+             id="mLocal.ID">
+             <selection
+                 class="org.eclipse.jface.text.ITextSelection">
+             </selection>
+         </action>
+         <action
+             label="Convert to AtomicLong"
+             class="mit.edu.concurrencyrefactorings.popup.actions.ConvertToAtomicLongEditorAction"
+             menubarPath="mit.edu.concurrencyRefactorings.menu2/atomics"
+             enablesFor="+"
+             id="mLocal.ID">
+             <selection
+                 class="org.eclipse.jface.text.ITextSelection">
+             </selection>
+         </action>
+         <action
+             label="Convert to ConcurrentHashMap"
+             class="mit.edu.concurrencyrefactorings.popup.actions.ConvertHashMapToConcurrentEditorAction"
+             menubarPath="mit.edu.concurrencyRefactorings.menu2/concurrents"
+             enablesFor="+"
+             id="mLocal.ID">
+             <selection
+                 class="org.eclipse.jface.text.ITextSelection">
+             </selection>
+         </action>
+         <action
+             label="Convert Recursion to FJTask"
+             class="mit.edu.concurrencyrefactorings.popup.actions.ConvertToFJTaskEditorAction"
+             menubarPath="mit.edu.concurrencyRefactorings.menu2/FJTask"
+             enablesFor="+"
+             id="mLocal.ID">
+             <selection
+                 class="org.eclipse.jface.text.ITextSelection">
+             </selection>
+         </action>
+      </viewerContribution>
+   </extension>
+
+</plugin>

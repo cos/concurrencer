@@ -1,0 +1,783 @@
+\documentclass[10pt,preprint]{sigplanconf}
+
+\usepackage{amsmath}
+\usepackage{times}
+\usepackage{comment}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{ifthen}
+\usepackage{multirow}
+\usepackage{xspace}
+\usepackage[pdftex]{graphicx}
+\usepackage{url}
+\usepackage{color}
+\urlstyle{sf}
+\usepackage{makeidx}
+%\usepackage{cite}
+\usepackage{url}
+\usepackage{rotating}
+\usepackage{multirow}
+
+\newboolean{hidecomments}
+\setboolean{hidecomments}{false}
+\ifthenelse{\boolean{hidecomments}}
+{\newcommand{\nb}[2]{}}
+{\newcommand{\nb}[2]{
+    \fbox{\bfseries\sffamily\scriptsize#1}
+    {\sf\small$\blacktriangleright$
+      {#2} $\blacktriangleleft$}}}
+\newcommand\John[1]{\nb{John}{#1}}
+%\newcommand\Danny[1]{\textbf{Danny: {#1}}} 
+\newcommand\Danny[1]{\nb{Danny}{#1}}
+\newcommand\todo[1]{\fbox{\bfseries\sffamily\scriptsize TODO: #1}}
+\newcommand\tool{{\smaller\textsc{Concurrencer}}\xspace}
+\newcommand{\Comment}[1]{}
+\newenvironment{CodeOut}{\begin{scriptsize}}{\end{scriptsize}}
+\newcommand{\code}[1]{\begin{small}\texttt{#1}\end{small}}
+\newcommand{\myParagraph}[1]{\textbf{#1}}
+\newcommand{\HalfWidth}{.45\columnwidth}
+\newcommand{\FullWidth}{.95\columnwidth}
+\newcommand{\MaxWidth}{\columnwidth}
+
+%\hyphenation{Concurrency-Re-factor-er,re-fac-to-ring}
+
+\begin{document}
+
+% \conferenceinfo{Second Workshop on Refactoring Tools}{Oct. 19-23, Nashville} 
+% \copyrightyear{2008} 
+% \copyrightdata{[to be supplied]} 
+
+%\titlebanner{banner above paper title}        % These are ignored unless
+%\preprintfooter{short description of paper}   % 'preprint' option specified.
+
+\title{Refactoring Code to Use Concurrent Library Utilities}
+%\subtitle{- draft version 0.8 - }
+
+\authorinfo{Danny Dig\and John Marrero\and Michael D. Ernst}
+           {Massachusetts Institute of Technology}
+           {dannydig,marrero,mernst@csail.mit.edu}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+Parallelizing existing sequential programs to run efficiently on multicores is
+not trivial. The programmer needs to make the program \emph{thread-safe} (i.e.,
+the program runs correctly when executed from several threads) and also \emph{scalable} (i.e., the performance of the program
+improves when adding more parallel resources).
+
+The Java class library has been extended with a package
+\code{java.util.concurrent (j.u.c.)} which provides thread-safe and scalable
+collections and utility classes. However, manual refactoring to such
+utilities is tedious and error-prone. This paper presents \tool, our extension
+to Eclipse's refactoring engine. \tool enables a programmer to refactor to 
+two \code{j.u.c.} utilities, \code{AtomicInteger} and \code{ConcurrentHashMap}.
+Preliminary experience with \tool shows that
+\tool refactors code effectively: \tool correctly identifies and applies more
+transformations than some open-source developers.
+
+\end{abstract}
+
+%\category{CR-number}{subcategory}{third-level}
+
+% \terms
+% Refactoring, concurrency, concurrent library, Java
+% 
+% \keywords
+% keyword1, keyword2
+
+\section{Introduction}
+
+% The problem: multicores are here
+% For several decades, the computing hardware industry has kept up with Moore's
+% Law, effectively doubling the number of transistors per chip every 18 months.
+% This translated in roughly doubling the speed of programs that ran
+% on the newer machines, an effect dubbed as ``the free performance lunch''.
+% Although the hardware industry keeps up with Moore's Law, from now it delivers
+% the transistors into multicore chips that run in parallel. This paradigm shift
+% demands that programmers find and exploit parallelism in their programs, if they
+% want to reap the same performance benefits as in the past.
+
+The computing hardware industry has shifted to multicore processors. This
+demands that programmers find and exploit parallelism in their programs, if
+they want to reap the performance benefits.
+
+
+% The challenge: parallelize sequential applications
+% In the multicore era, a major programming task is to retrofit parallelism into
+% the existing sequential programs. It is arguably easier to design 
+% the programs with concurrency in mind than to retrofit it
+% later~\cite{Lea:CPJ99, Goetz:JCP06}. However, most of the desktop programs were
+% not designed to be concurrent, thus programmers have to refactor existing
+% sequential programs for concurrency.
+
+% Concrete challenge: thread-safety and scalability
+The dominant paradigm for concurrency in desktop programs is shared-memory,
+thread-based. However, this paradigm increases the risk for deadlocks and
+data-races, commonly known as \emph{thread-safety} concerns. In addition, the
+programmer needs to consider \emph{scalability} concerns as well: will the
+parallelized program continue to run faster when adding more parallel 
+resources? 
+
+% Java.util.concurrent class library
+To meet the needs of programmers with respect to thread-safety and scalability,
+the Java standard library has been extended with a package,
+\code{java.util.concurrent} (from here on referred as \code{j.u.c.}), containing
+several utility classes for dealing with concurrency. Among others,
+\code{j.u.c.} contains a set of \code{Atomic} classes which offer thread-safe,
+lock-free programming over single variables, and several thread-safe abstract
+data types (e.g., ConcurrentHashMap) optimized for scalability. However,
+manually refactoring a program to use \code{j.u.c.} utilities is
+\emph{tedious} and \emph{error-prone}.
+
+% This paper presents \tool and two automated refactorings:
+
+This paper presents \tool, our extension to Eclipse's refactoring engine. \tool
+enables Java programmers to quickly and safely refactor their sequential
+programs to use \code{j.u.c.} utilities. In this paper we present two 
+refactorings: (i) \emph{ConvertToAtomicInteger} and (ii) \emph{ConvertToConcurrentHashMap}.
+Our previous study~\cite{Dig'08:studyOfConcurrentTransformations} of five
+open-source projects that were manually parallelized by their developers shows
+that these two refactorings were among some of the most commonly used in
+practice.
+
+% ConvertToAtomicInteger
+First refactoring, \emph{ConvertToAtomicInteger}, enables a programmer to
+convert an \code{int} field to an \code{AtomicInteger}. \code{AtomicInteger} is
+a lock-free utility class which encapsulates an \code{int} value. Our
+refactoring replaces field updates with calls to \code{AtomicInteger}'s APIs.
+
+% This refactoring changes the declaration
+% type of the field and it replaces all field updates with calls to the APIs
+% provided by \code{AtomicInteger}. For example, a common update operation on
+% an \code{int} field is to increment its current value with a given delta. To
+% make this update thread-safe, a programmer needs to encapsulate within a
+% \emph{synchronized block} three operations: (i) read the current
+% value, (ii) add delta, and (iii) update the field. Had the programmer forget to
+% include all three operations, a data-race might appear. In addition, due to the
+% program having to frequently acquire and release the lock, the program does not
+% scale due to lock-contention. \tool finds such read/add/update code snapshots
+% and replaces them with a call to \code{AtomicInteger}'s \code{getAndAdd()}
+% which \emph{atomically} executes the update without using any locks. 
+ 
+
+
+% ConvertToConcurrentHashMap 
+Second refactoring, \emph{ConvertToConcurrentHashMap}, enables a programmer to
+convert an \code{HashMap} field to \\
+\code{ConcurrentHashMap}.
+\code{ConcurrentHashMap} is a thread-safe, highly scalable implementation for
+hash maps. Our refactoring replaces map updates with calls to the APIs provided
+by \code{ConcurrentHashMap}.
+
+% This utility class
+% enables all readers to access the map concurrently, without blocking, and
+% allows a number of writers to execute updates concurrently. The refactoring
+% changes the declaration type of the field and it replaces map updates with 
+% calls to the APIs provided by \code{ConcurrentHashMap}. For example, a common 
+% update operation is (i) check if a map contains a key-value pair, and if it is
+% not present, then (ii) place the pair in the map. Traditionally, a programmer
+% needs to encapsulate these two operations within a synchronized block. Since all
+% accesses to a map have to aquire the map's lock, this can severely degrade the
+% map's performance under heavy lock-contention. \tool finds such an updating operation and it replaces it with a call to
+% \code{ConcurrentHashMap}'s \code{putIfAbsent} which \emph{atomically} executes
+% the update without blocking (assuming that no other writers write in the same
+% hash bucket).
+
+% \tool implemented as an Eclipse plugin
+
+% Preliminary experience with the two refactorings
+To get some preliminary experience with \tool, we studied
+the code that open-source developers manually refactored to make use
+of \code{AtomicInteger} or \code{ConcurrentHashMap}. We also used \tool to
+refactor the same code and then we compared the manually vs. automatically
+refactored output. \tool applied all the
+transformations that the developers applied. Even more, \tool correctly
+identified and applied some transformations that the open-source developers
+omitted. This experience shows that \tool is effective.
+
+\tool can be downloaded from the webpage: \\
+\code{http://refactoring.info/tools/\tool}
+
+%--------------------------------------------
+\section{Convert to Atomic Integer}
+
+\begin{figure*}[t]
+\begin{CodeOut}
+\begin{tabular}{@{}l|l@{}}
+\begin{minipage}[t]{\FullWidth}
+\begin{verbatim}
+// before refactoring
+public class Counter {
+
+ private int value = 0;
+        
+ public int getCounter() {
+  return value;
+ }
+        
+ public void setCounter(int counter) {
+  value = counter;
+ }
+        
+ public int inc() {
+  return ++value;
+ }
+}
+\end{verbatim}
+\end{minipage}
+&
+\begin{minipage}[t]{\FullWidth}
+\begin{verbatim}
+// after refactoring
+public class Counter {
+ 
+ private AtomicInteger value = new AtomicInteger(0);
+        
+ public int getCounter() {
+  return value.get();
+ }
+        
+ public void setCounter(int counter) {
+  value.set(counter);
+ }
+        
+ public int inc() {
+  return value.incrementAndGet();
+ }
+}
+\end{verbatim}
+\end{minipage}
+\end{tabular}
+\end{CodeOut}
+\caption{Using \tool to refactor an \texttt{int} field to
+\texttt{AtomicInteger} in some real Apache Tomcat code. Left/right shows code
+before/after refactoring.}
+\label{fig:CounterExample}
+\end{figure*}
+
+\subsection{AtomicInteger in Java}
+Starting with \code{JDK 1.5}, the Java class library
+offers a package \code{java.util.concurrent.atomic} that
+supports \emph{lock-free} programming on \emph{single} variables. 
+
+The package contains wrapper classes over primitive variables, for example,
+an \code{AtomicInteger} wraps an \code{int} value. The main advantage
+is that update operations execute atomically, without blocking. 
+%For example,
+% \code{AtomicInteger} provides an API method \code{addAndGet(int delta)} that
+% atomically adds the given delta to the current value. 
+Internally, the \code{AtomicInteger} employs efficient machine-level
+atomic instructions like \emph{Compare-and-Swap} that are available on 
+contemporary processors. Using the \code{AtomicInteger}, the programmer
+gets both \emph{thread-safety} (built-in the \code{Atomic} classes) and
+\emph{scalability} (the lock-free updates reduce lock-contention~\cite{Goetz:JCP06}).
+
+% However, \code{Atomic} classes are not meant as a general replacement for
+% locking. One can use them only when the critical sections for an object require
+% updates to a \emph{single} variable. Sometimes an object needs to maintain an
+% invariant involving more than one variable (e.g., a \code{ValueRange} object
+% needs to ensure that its \code{max} int field is always greater than its
+% \code{min} int field). In such cases the programmer cannot use an
+% \code{AtomicInteger} to maintain a \emph{multi-variable} invariant, but
+% needs to use a lock around code which updates those variables together.
+% 
+% Additionally, atomic classes are not a general purpose replacement for their
+% related classes. \code{AtomicInteger} is \emph{mutable} while its equivalent
+% \code{Integer} class is \emph{immutable}. Therefore, an \code{AtomicInteger}
+% does not define \code{hashCode} and \code{equals} methods.  
+
+
+% With all the restrictions on \code{Atomic} classes, why would a programmer use
+% them? Using \code{Atomic} classes, the programmer gets both \emph{thread-safety}
+% (built-in the \code{Atomic} classes) and \emph{scalability} (the lock-free
+% updates reduce lock-contention under heavy accesses~\cite{Goetz:JCP06}).
+ 
+\subsection{Code Transformations}
+
+
+\tool enables a programmer to convert an \code{int} field to an
+\code{AtomicInteger} field. \tool changes the declaration type of the
+\code{int} field to \code{AtomicInteger} and replaces all field updates with 
+their equivalent atomic API methods in \code{AtomicInteger}.
+
+Figure~\ref{fig:CounterExample} shows how \tool refactors some code
+from Apache Tomcat. We use this example to illustrate various 
+transformations.
+
+\myParagraph{Initialization}
+Because the refactored \code{value} field is an \code{AtomicInteger} object,
+\tool initializes it in the field initializer (otherwise a
+\code{NullPointerException} is thrown the first time when a method is invoked
+on \code{value}). \tool initializes the field with the
+expression in the original field initializer (if present), or with the
+default value \code{0}.
+
+
+\myParagraph{Read/Write Accesses}
+\tool replaces read access (e.g., in method \code{getCounter()}) with a call to
+\code{AtomicInteger}'s \code{get()}. The \code{get()} method returns 
+the \code{int} value encapsulated by the \code{AtomicInteger}. Thus a client of the \code{Counter}
+would never get the \code{AtomicInteger} object, but only the \code{int}
+value. This ensures that the client of the class cannot mutate the
+primitive \code{int} field, a contract similar with the one in the sequential
+version.
+
+\tool replaces write accesses (e.g., in method \code{setCounter}) with a call
+to \code{AtomicInteger}'s \code{set()}. 
+
+\myParagraph{Expressions}
+There are three kinds of update expressions: infix (e.g., \code{f = f + 2}),
+prefix (e.g., \code{++f}), and postfix (e.g., \code{f++}). 
+\tool rewrites an infix update expression using a call to the atomic
+\code{addAndGet(int delta)}.
+% There is no equivalent method or form for \code{*} or \code{/}, so they cannot
+% be refactored. 
+\tool rewrites a prefix update expression with a call to the atomic
+\code{incrementAndGet()} (e.g., method~\code{inc()} in
+Fig.~\ref{fig:CounterExample}). It rewrites a postfix expression with a call to
+the atomic \code{getAndIncrement()}. 
+\Comment{The difference in name between the
+methods \code{getAndIncrement()} and \code{incrementAndGet()} reflects the
+difference in their return values. \code{getAndIncrement()} increments its
+operand but returns the old value, whereas \code{incrementAndGet()}
+first increments the operand and then returns the new value.}
+\tool rewrites similarly other expressions (e.g., the decrement expressions).
+Since \code{AtomicInteger} does not offer atomic APIs for all operands (e.g.,
+multiplication), \tool warns a user when an update expression cannot be replaced
+by the atomic APIs.
+%So, if \code{f} is an \code{int}, then \code{f = f+2} becomes \code{f.addAndGet(2)} and \code{f = f-2} becomes \code{f.addAndGet(-2)}.
+
+\myParagraph{Synchronization}
+If the original code contains \code{synchronized} accesses to the
+refactored field, \tool tries to remove the synchronization since this becomes
+superfluous after the conversion to \code{AtomicInteger} (thread-safety is
+built-in the \code{AtomicInteger}). \tool does not remove the synchronized block
+(i) if the refactored code contains more than one call to the atomic APIs (
+since a context switch can still occur between two consecutive calls to atomic
+APIs) and (ii) if the synchronized block accesses other fields in
+the class (since the \code{AtomicInteger} can maintain invariants only over one
+single variable).
+
+\Comment{Here we presented the most relevant transformations. \tool applies other
+transformations (e.g., for different kinds of expression operators) similar in
+spirit with the ones presented.}
+
+%\begin{itemize}
+%  \item - initialization of AtomicInteger
+%  \item - read/write access
+%  \item - infix
+%  \item - prefix/postfix
+%  \item - removal of synchronized
+%\end{itemize}
+
+
+%---------------------------------------------
+\section{Convert to ConcurrentHashMap}
+\begin{figure*}[t]
+\begin{CodeOut}
+\begin{tabular}{@{}l|l@{}}
+\begin{minipage}[t]{\MaxWidth}
+\begin{verbatim}
+// before refactoring
+HashMap<Presence, Container> directedPresences;
+
+public void directedPresenceSent(Presence presence,
+     				 	 ChannelHandler handler, String jid) {
+ ...
+ Container<ChannelHandler, String> container;
+ ...
+ 
+ container = directedPresences.get(presence);
+
+ if (container == null) {
+  container = new Container<ChannelHandler, String>();
+  container.add(handler, jid);
+  directedPresences.put(presence, container);
+ }
+
+ ...
+}
+\end{verbatim}
+\end{minipage}
+&
+\begin{minipage}[t]{\MaxWidth}
+\begin{verbatim}
+// after refactoring
+ConcurrentHashMap<String, Container> directedPresences;
+
+public void directedPresenceSent(Presence presence,
+              ChannelHandler handler, String jid) {
+ ...
+ Container<ChannelHandler, String> container;
+ ...
+ 
+ directedPresences.putIfAbsent(presence,
+                               createContainer(handler, jid));
+ 
+ ...
+}
+
+Container<ChannelHandler, String> createContainer
+                  (ChannelHandler handler, String jid) {
+ Container container = new Container<ChannelHandler, String>();
+ container.add(handler, jid);
+ return container;
+}
+
+\end{verbatim}
+\end{minipage}
+\end{tabular}
+\end{CodeOut}
+\caption{Example ConvertToHashMap refactoring from Struts using the
+\texttt{putIfAbsent} pattern.}
+\label{fig:putIfAbsent}
+\end{figure*}
+
+\subsection{ConcurrentHashMap in Java}
+The \code{j.u.c.} package contains several concurrent collection classes. 
+\code{ConcurrentHashMap} is the thread-safe implementation for \code{HashMap}.
+
+Before \code{j.u.c.}, a programmer could create a thread-safe \code{HashMap}
+by using a \emph{common} lock to protect all \code{map} accesses. This results
+in poor concurrency when multiple threads contend for the lock.
+
+\code{ConcurrentHashMap} uses a different locking strategy that offers much
+better scalability. It uses a \emph{fine-grained} locking mechanism (called
+\emph{lock-stripping}) that enables all readers to run concurrently, and allows
+a limited number of writers to update the map concurrently. The implementation
+uses a number of \code{N} locks (the default value is 16), each of them guarding
+a part of the hash buckets. Assuming that the hash functions spreads well the
+values, and that keys are accessed randomly, this reduces the contention for
+any given lock by a factor of \code{N}. Replacing a synchronized \code{HashMap}
+with \code{ConcurrentHashMap} offers dramatic scalability improvements~\cite{Goetz:JCP06}.
+
+\code{ConcurrentHashMap} implements the \code{Map} interface, therefore it
+includes the API methods offered by \code{HashMap}. In addition, it contains
+three APIs (\code{putIfAbsent}, \code{replace}, and a conditional
+\code{remove}). Each API supersedes several calls to \code{Map} operations,
+but it executes atomically. For example, \code{putIfAbsent} atomically (i)
+checks whether the map contains a given key, and (ii) puts the key-value pair if
+it is absent.
+
+
+
+
+\subsection{Code Transformations}
+
+\tool converts a \code{HashMap} field to a \\
+\code{ConcurrentHashMap} field.
+
+\myParagraph{Initialization and Accesses.} \tool changes the declaration and the
+initialization of the field. Because \code{HashMap} and
+\code{ConcurrentHashMap} implement the same interface (\code{Map}),
+initialization and map accesses remain largely the same. 
+
+\myParagraph{Map Updates.} \tool detects update code patterns and
+replaces them with the appropriate \\
+\code{ConcurrentHashMap} API method.
+
+The patterns have a similar structure: (i) check whether the map contains a
+certain key, and (ii) as appropriate, invoke one of \code{put}, \code{replace},
+or \code{remove}). This structure can have small variations. 
+For instance, the check can invoke \code{containsKey}, \code{get}, or
+an equality check using \code{get}. A temporary variable might hold the result
+of the check (like in Fig.~\ref{fig:putIfAbsent}). \tool handles all combinations among these map
+update variations. Although these are the most common variations we have seen in
+real code, there might be other variations that we have not seen yet. Failing
+to convert those updates does not break user code if it contains a lock; it only
+misses the oportunity to use the atomic update APIs.
+
+Fig.~\ref{fig:putIfAbsent} shows an example where
+the then-branch has two statements that create a new \code{container} value and
+then places it in the map. \tool extracts these creational statements in a
+\code{createContainer} method and calls this method when inserting the new value
+in the \code{directedPresences} map. In addition, \tool performs a data-flow
+analysis to find out whether the input value to the map
+(e.g., \code{container}) is wrote in the conditional code, and read after the
+conditional code. Accordingly, \tool saves the created value in a temporary
+variable, and assigns it to the input variable in case that 
+\code{putIfAbsent} succeeded (not shown in the figure).
+
+
+%\begin{itemize}
+%  \item initialization of ConcurrentHashMap
+%  \item putIfAbsent (i) - no createValue,\\ 
+%  (ii) with extracted method createValue
+%  \item - replace
+%  \item - remove
+%  \item - description of variations with (i) containsKey, (ii) get
+%\end{itemize}
+
+
+
+
+
+
+% \begin{figure*}[t]
+% \begin{CodeOut}
+% \begin{tabular}{@{}l|l@{}}
+% \begin{minipage}[t]{\MaxWidth}
+% \begin{verbatim}
+% // before refactoring
+% private Map _registeredModules = new HashMap();
+% 
+% public void resetModuleConfig(String namespace) {
+%  ...
+%  ModuleConfig mc = (ModuleConfig)
+%                 _registeredModules.get(namespace);
+%  
+%  if (mc != null) {
+%   URL moduleConfURL = getModuleConfURL(namespace);
+%   mc = new ModuleConfig(namespace, moduleConfURL);
+%   
+%   _registeredModules.put(namespace, mc);
+%  }
+% }
+% \end{verbatim}
+% \end{minipage}
+% &
+% \begin{minipage}[t]{\MaxWidth}
+% \begin{verbatim}
+% // after refactoring
+% private Map _registeredModules = new ConcurrentHashMap();
+% 
+% public void resetModuleConfig(String namespace) {
+%  ...
+% 
+%  _registeredModules.replace(namespace, createValue(namespace));
+% }
+% 
+% ModuleConfig createValue(String namespace) {
+%  
+%  URL moduleConfURL = getModuleConfURL(namespace);
+%  mc = new ModuleConfig(namespace, moduleConfURL);
+%  
+%  return mc;
+% }
+% \end{verbatim}
+% \end{minipage}
+% \end{tabular}
+% \end{CodeOut}
+% \caption{Example ConvertToHashMap refactoring of code adapted from Struts using the replace pattern, with get, an intermediate variable, and method extraction.}
+% \label{fig:replace}
+% \end{figure*}
+
+
+%---------------------------------------------
+\section{Preliminary Evaluation}
+
+\myParagraph{Research Question.} To evaluate the effectiveness of \tool, we
+answer the question ``How does manually-refactored code compare with code
+refactored with \tool in terms of using the correct APIs and identifying all
+oportunities to replace field accesses with thread-safe API calls?''
+
+\myParagraph{Setup.} We start from code that was manually refactored by
+open-source developers to use \code{AtomicInteger} or
+\code{ConcurrentHashMap}. We then refactor \emph{the same} fields by
+running \tool on the initial code. We compare the code refactored with \tool
+against code refactored by hand. We look at places where the two outputs
+differ, and quantify the number of \emph{errors} (i.e., one of the outputs
+misuses the concurrent APIs) and the number of \emph{omissions} (i.e., the
+refactored output could have used a concurrent API, but it instead uses the
+obsolete, lock-protected APIs).
+
+To get codebases which use \code{AtomicInteger} or \\
+\code{ConcurrentHashMap} we
+used 6 open-source projects: Apcahe Tomcat, MINA, Struts, GlassFish,
+JaxLib, and Zimbra. We used the head versions available in the version control
+system as of June 1st, 2008. 
+
+\Comment{
+Although for \code{AtomicInteger} we were able to
+find both the version with the \code{int} field and the version with \code{AtomicInteger} field, for the second refactoring
+(\code{ConvertToConcurrentHashMap}) we were not able to find the versions which 
+contained \code{HashMap}. It seems that those projects were using
+\code{ConcurrentHashMap} from the first version of the file. In those cases we
+manually replaced \emph{only} the type declaration of the
+\code{ConcurrentHashMap} field with \code{HashMap}; then we ran \tool to convert
+the usage of \code{HashMap} back to \code{ConcurrentHashMap}
+}
+
+\myParagraph{Results.}
+\tool applied all the correct transformations that the project developers
+applied. We noticed several cases where \tool outperforms the developers: \tool
+produces the correct code, or it identifies more opportunities for using the
+new, scalable APIs.
+
+
+For \emph{ConvertToAtomicInteger}, we noticed cases where
+the developers used the wrong APIs when they refactored by hand. We noticed
+that developers erroneously replaced infix expressions like \code{++f} with
+\code{f.getAndIncrement()}, which is the equivalent API for the postfix expression. They should
+have replaced \code{++f} with \code{f.incrementAndGet()}. The erroneous usage
+of the API can cause an ``off-by-one'' value if the field is read in the same
+statement that increments it. Table~\ref{tab:ImproperAIUsages} shows the number
+of such human errors in the two projects.
+
+ 
+For \emph{ConvertToConcurrentHashMap} we noticed cases when the developers
+omitted to use the new atomic \code{putIfAbsent} and conditional \code{remove}
+operations, and instead use the old patterns involving synchronized,
+lock-protected access to \code{put} and \code{remove}. Although the
+refactored code is thread-safe, this defeats the purpose of using
+\code{ConcurrentHashMap}, i.e., to avoid locking the whole map for the 
+duration of update operations in order to improve the scalability of the
+application. Table~\ref{tab:ImproperCHMUsages} shows the number of such
+human omissions in the studied projects.
+
+%\begin{itemize}
+%  \item
+%  Describe the goal as a question: How does the code manually converted
+%  compares with the code converted with \tool? More specifically, are there
+%  cases when \tool outperforms the manual conversion?
+%  Further explain what this means
+%  \item These are the projects that we looked at (project version x.y.z)
+%  \item setup of the experiment 
+%  \item results:
+%  how many times the human was wrong: misusing getAndIncrement vs incrementAndGet
+%  explain this
+%  MENTION TABLE
+%  places where they missed to use putIfAbsent, replace, remove
+%  (put a table here). 
+%  \end{itemize}
+
+\begin{table}
+% increase table row spacing, adjust to taste
+%\renewcommand{\arraystretch}{1.3}
+\centering
+\begin{footnotesize}
+\begin{tabular}{l|cc|cc} 
+         & \multicolumn{2}{|c|}{\textbf{incrementAndGet}} & \multicolumn{2}{|c}{\textbf{decrementAndGet}} \\ 
+         & correct        & erroneous                     & correct        & erroneous                     \\ 
+         & usages         &  usages                       & usages         & usages                        \\ \hline
+  Tomcat &      0         &        1                      &        0       &     1                         \\
+  MINA   &      0         &        1                      &        0       &     1                         \\
+\end{tabular}
+\caption{Human errors in using \texttt{AtomicInteger} updates in the 6
+refactorings performed by the developers of Tomcat and MINA.}
+\label{tab:ImproperAIUsages}
+\end{footnotesize}
+\vspace{-0.2in}
+\end{table}
+
+\begin{table}
+% increase table row spacing, adjust to taste
+\renewcommand{\arraystretch}{1.3}
+\centering
+\begin{footnotesize}
+\begin{tabular}{l |cc|cc}
+
+             & \multicolumn{2}{|c|}{\textbf{putIfAbsent}}  &\multicolumn{2}{|c}{\textbf{remove}} \\
+             & correct& omissions & correct  & omissions  \\
+             & usages &           & usages   &            \\ \hline
+\ Struts     &  0     &  9        &  0       &  0  \\
+\ GlassFish  &  0     &  8        &  1       &  3  \\
+\ JaXLib     &  9     &  2        &  0       &  0  \\
+\ Zimbra     &  3     &  42       &  11      &  6  \\
+\end{tabular}
+\caption{Human omissions to use \texttt{ConcurrentHashMap}'s
+\texttt{putIfAbsent} and conditional \texttt{remove} in the 69
+\texttt{ConcurrentHashMap} fields used by the developers of Struts,
+GlassFish, JaxLib, and Zimbra.}
+\label{tab:ImproperCHMUsages}
+\end{footnotesize}
+\vspace{-0.1 in}
+\end{table}
+
+
+%---------------------------------------------
+\section{Related Work}
+
+Balaban et al.~\cite{Balaban'05} present a tool for converting between obsolete
+classes and their modern replacements. The programmer specifies a mapping
+between the old APIs and the new APIs, and the tool uses a type-constraint
+analysis to determine whether it can replace all usages of the obsolete class.
+Their tool is more general than ours, since it can work with any API mapping,
+for example one between \code{HashMap} and \code{ConcurrentHashMap}. \tool is
+less general, since the conversion between \code{HashMap} and
+\code{ConcurrentHashMap} is custom implemented. However, such conversion
+requires more powerful AST pattern matching and rewriting than the one used in
+their tool. Their tool can replace only a single PAI call at a time, whereas
+our tool replaces a set of related but dispersed API calls (like the ones in
+Fig.~\ref{fig:putIfAbsent}).
+
+Boshernitsan et al.~\cite{Boshernitsan'07:FrameworkForTransformations} present
+iXj, a general framework for code transformations. iXj has an intuitive user
+interface that enables the user to quickly sketch a pattern for the code
+transformation. Although useful for a broad range of transformations, iXj is not
+able to transform code where the pattern matching executes against several
+dispersed statements (like the ones in Fig.~\ref{fig:putIfAbsent}) and it
+requires data-flow analysis. In such scenarios, a user needs to use a custom
+implemented transformation tool like \tool.
+
+%---------------------------------------------
+\section{Conclusions}
+Refactoring sequential code to parallelism is not a trivial task. Even
+seemingly simple refactorings like replacing data types with thread-safe,
+scalable implementations provided in \code{java.util.concurrent}, is prone to
+human errors and omissions. In this paper we present \tool which automates two
+refactorings for converting integer fields to \code{AtomicInteger} and hash maps to
+\code{ConcurrentHashMap}. Our preliminary experience with \tool shows that it
+is more effective than a human developer in identifying and applying such
+transformations.
+
+The refactorings presented here are ``enabling transformations'', i.e., they
+make a program thread-safe, but do not introduce multi-threading into a
+single-threaded program. Currently we are working on other transformations that
+introduce multi-threading. One refactoring converts a sequential
+recursive divide-and-conquer algorithm into one which runs the recursive
+branches in parallel using \code{ForkJoinTask}s. Another refactoring
+parallelizes a sequential loop by using the \code{ParallelArray} construct.
+
+
+% \acks
+% 
+% We thank Adam Kiezun for feedback on a draft of this paper.
+
+% \bibliographystyle{plainnat}
+% 
+% \begin{thebibliography}{10}
+% @book{Goetz:JCP06,
+%  author = {Brian Goetz and Tim Peierls and Joshua Bloch and Joseph Bowbeer and  David Holmes and Doug Lea},
+%  title = {Java Concurrency in Practice},
+%  year = {2006},
+%  publisher = {Addison-Wesley},
+%  }
+% \end{thebibliography}
+% \bibliography{../../../Bibliography/biblio}
+
+\bibliographystyle{abbrv}
+%\bibliography{./biblio}
+\begin{thebibliography}{10}
+\bibitem{Balaban'05}
+I.~Balaban, F.~Tip, and R.~Fuhrer.
+\newblock Refactoring support for class library migration.
+\newblock In {\em OOPSLA '05}, pages 265--279. 
+
+\bibitem{Boshernitsan'07:FrameworkForTransformations}
+M.~Boshernitsan, S.~L. Graham, and M.~A. Hearst.
+\newblock Aligning development tools with the way programmers think about code
+  changes.
+\newblock In {\em CHI '07}, pages 567--576. 
+
+\bibitem{Dig'08:studyOfConcurrentTransformations}
+D.~Dig, J.~Marrero, and M.~D. Ernst.
+\newblock How do programs become more concurrent? {A} story of program
+  transformations.
+\newblock Technical Report MIT-CSAIL-TR-2008-053, MIT, September 2008.
+
+\bibitem{Goetz:JCP06}
+B.~Goetz, T.~Peierls, J.~Bloch, J.~Bowbeer, D.~Holmes, and D.~Lea.
+\newblock {\em Java Concurrency in Practice}.
+\newblock Addison-Wesley, 2006.
+
+\bibitem{Lea:CPJ99}
+D.~Lea.
+\newblock {\em Concurrent Programming in Java. Second Edition: Design
+  Principles and Patterns}.
+\newblock Addison-Wesley, 1999.
+\end{thebibliography}
+
+\end{document}
+

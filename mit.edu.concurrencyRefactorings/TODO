@@ -1,0 +1,382 @@
+07/02/08 - present
+
+TODO List:
+
+- Study of how putIfAbsent, remove, replace are used in practice (4 hours)
+
+- Line 278 TODO.
+- TODO use CodeFormatter instead of this
+- Need to change... see Problems Discovered.
+
+- Need to go back and look at the weird specification for remove (and replace?)
+
+- See random notes/problems below for things to deal with.
+- Look at the "We now allow for..." line in Fixes. We probably don't care about this anymore.
+
+
+Completed:
+
+- Implement boolean return type for remove/replace - DONE. Took ~1h.
+- Make extract method work on other branch (10 minutes) - DONE, took ~20m.
+- Form 1 of putIfAbsent (1 hour) - DONE, took ~80m.
+- replace, forms 1 and 2 (2 hours) - DONE. Took ~20 min.
+- remove, forms 1 and 2 (2 hours) - DONE. Took ~20 min.
+- Restructure visit(IfStatement) (3 hours) - DONE, took ~5:30 hours.
+- Handle new cases, fix errors with existing code, DONE, took ~9h total.
+	- Add new cases and tests and fix the existing tests to actually test the correct things,
+		and remove errors they may have (new task) - DONE, took ~1h30m.
+	- Restructure and use (correctly!) checkSynchronizedBlock, checkSynchronizedMethod, and createPutIfAbsent
+		(now renamed to replaceIfStatementWithMethod) for new forms (new task) - DONE, took ~7h30m.
+
+Problems Discovered:
+
+- We don't handle more than one createavalue(). See the TestPutIfAbsentFormUsingContainsKey_WithCreateValue test. (We found this is for different reasons. Two methods
+	with DIFFERENT statements will give different createValue()s. With the same, it should just give one. It'd be nice to do, but we might not.) 
+- We don't handle some cases for visit(IfStatement). See TODOs.
+- Re-add tests for boolean return type for remove/replace. They're still good.
+- Need to change synchronized tests from size() == 1 to this new number of accesses of variable we're refactoring thing:
+
+method(object arg1) {
+    Object local1 = arg1;
+
+    synchronized(){
+       _local1_
+       _field_
+    }
+}
+
+Exactly one access to the field we're refactoring.
+Any other local variables that are in the sync cannot point to other fields.
+(Check for exactly one single access to our field and that there are no other accesses to other fields. Also need to deal with fields masquerading as arguments. Most
+	conservative approach: also rule out ANY argument accesses in the syncs.)
+
+Fixes:
+
+- Apparently our synchronized block/method checks were not very general and handled only certain kinds of statements.
+	It was difficult to stretch them out because of the way our code was written, but they handle more general types now.
+- Sync block/method checks were difficult to fix. They checked the old forms of the code, which gave incorrect results.
+	(For example, when putIfAbsent replaced an if statement, the sync checks would look at the old, still-existing if statement
+	and not the new, single putIfAbsent statement.) This works now. I process all proposed text edits and look at the new code
+	and if it meets our criteria we add in edits to the old code (which will be processed after the previously proposed edits).
+	In other words, we predict the future to know what text edits to add in now to be done later.
+- Corrected the indentation for the output from TestPutIfAbsentFormUsingContainsKey_WithCreateValue, as getting it from
+	the document introduced additional indentation.
+- Parenthesized expressions never actually worked. Fixed and generalized them. Added a test for them, as well.
+- We now allow for random intermediate statements in synchronized blocks and methods that have nothing to do with
+	the putIfAbsent or whatever method we're looking at. These will prevent removal of the synchronized mechanisms.
+
+Random Notes:
+
+	- Maybe test cases where there are multiple sync blocks in one method, some relevant (and
+		so we'd remove or not remove some of them) and some having nothing to do with our
+		refactoring (so we leave them).
+	- Left some TODOs hanging. They're special fixes that'd be nice to have if we have time.
+
+	// Add "else" all-catches for everything and throw errors.
+	
+	// TODO containsKey form, as well (this is from... remove?)... same for replace?
+	// Add to output, too...
+	// And sync forms.
+	// What is the put form? Did I get this from the API?
+	// Need tests for multiple statement (both involving remove/replace and not
+		involving remove/replace) syncblocks/syncmethods
+
+	// Can we resolve an arbitrary number of negation operators?
+	
+	
+
+	
+	
+	
+	
+Scratch notes:	
+	
+	
+Generalized analysis:
+	get directly:
+		replace:
+			!= null
+			put()
+		remove:
+			!= null
+			remove()
+		putIfAbsent:
+			== null
+			put()
+			
+	
+	get with intermediate:
+		replace:
+			!= null
+			put()
+		remove:
+			!= null
+			remove()
+		putIfAbsent:
+			== null
+			put()
+	
+	containsKey directly:
+		replace:
+			if
+			put()
+		remove:
+			if
+			remove()
+		putIfAbsent:
+			!if
+			put()
+	
+	containsKey with intermediate:
+		replace:
+			true
+			put()
+		remove:
+			true
+			remove()
+		putIfAbsent:
+			!true
+			put()
+	
+	
+	Might even be able to generalize to check for direct usage with containsKey, but with == true
+	Also, can we do if(something) to check when something !null ? If so, generalize to that, too.
+	
+	==================================================
+		Operator
+	==================================================
+	
+	if(get() != null)
+	if(get() == null)
+	
+	========================
+	
+	result = get()
+	if(result == null)
+	
+	result = get()
+	if(result != null)
+	
+	========================
+	
+	if(containsKey() == true)
+	if(containsKey() != true)
+	if(containsKey() == false)
+	if(containsKey() != false)
+	
+	==================================================
+		Direct
+	==================================================
+	
+	if(containsKey())
+	if(!containsKey())
+	
+	========================
+	
+	result = containsKey()
+	if(result)
+	
+	result = containsKey()
+	if(!result)
+	
+	========================
+	
+	if(get())
+	if(!get())
+	
+	========================
+	
+	package scratch;
+
+import java.util.HashMap;
+
+public class C1 {
+	
+	HashMap hm = new HashMap();
+	HashMap hm2 = new HashMap();
+	
+	// Using get directly -----------------------------------------------
+	
+	public void doReplace2() {
+		if(hm.get("a_key") != null)
+			hm.put("a_key", "a_value");
+	}
+	
+//	public void doRemove2() {
+//	if(hm.get("a_key") != null)
+//		hm.remove("a_key");
+//	}
+
+	
+//	void doPutIfAbsent2() {
+//		if (hm.get("a_key") == null) {
+//			hm.put("a_key", "a_value");
+//		}
+//	}
+	
+	// Using get with intermediate ---------------------------------------
+	
+	public void doReplace() {
+		Object result = hm.get("a_key");
+		if(result != null)
+			hm.put("a_key", "a_value");
+	}
+	
+//	public void doRemove() {
+//	Object result = hm.get("a_key");
+//	if(result != null)
+//		hm.remove("a_key");
+//	}
+		
+//	void doPutIfAbsent() {
+//		Object result = hm.get("a_key");
+//        if (result == null) {
+//            hm.put("a_key", "a_value");
+//        }
+//	}
+	
+	
+	// Using containsKey directly ----------------------------------------
+	
+	public void doReplace4() {
+		if(hm.containsKey("a_key"))
+			hm.put("a_key", "a_value");
+	}
+	
+//	public void doReplace4() {
+//		hm.replace("a_key", "a_value");
+//	}
+	
+//	public void doRemove4() {
+//		if(hm.containsKey("a_key"))
+//			hm.remove("a_key");
+//	}
+	
+	void doPutIfAbsentExpressionStatement() {
+		if (!hm.containsKey("a_key"))
+	        hm.put("a_key", "a_value");
+	}
+	
+	// Using containsKey with intermediate -------------------------------
+	
+	public void doReplace3() {
+		boolean result = hm.containsKey("a_key");
+		if(result)
+			hm.put("a_key", "a_value");
+	}
+	
+//	public void doRemove3() {
+//		boolean result = hm.containsKey("a_key");
+//		if(result)
+//			hm.remove("a_key");
+//	}
+	
+//	void doPutIfAbsentBlockWithIntermediate() {
+//		boolean result = hm.containsKey("a_key");
+//		if (!result) {
+//			hm.put("a_key", "a_value");
+//		}
+//	}
+}
+
+==================================
+New form:
+
+if (properties.containsKey(keyString)) {
+	String originalValue = properties.get(keyString);
+	answer = properties.put(keyString, (String)value);
+	// ... more logging/records code ...
+}
+
+is something like:
+
+if (properties.containsKey(keyString)) {
+	BEFORE_PUT
+	answer = properties.put(keyString, (String)value);
+	AFTER_PUT
+}
+
+- if value is created in BEFORE_PUT
+	(PRECONDITION: if there are other, non-putvalue-creation statements in BEFORE_PUT or AFTER_PUT
+	 uses anything here, extractMethod should return an error - use that error)
+	    if AFTER_PUT or AFTER_IF uses result of createValue
+	    	do extract createValue method
+			[
+				Variable createdValue = createValue();
+				if (properties.putIfAbsent(createdValue) == null) {  // null return indicates successful putIfAbsent
+					AFTER_PUT (using createdValue)
+				}
+				AFTER_IF
+			]
+    	else
+			do extract createValue method
+			[
+				if (properties.putIfAbsent(createValue(...) == null) {
+					AFTER_PUT
+				}
+			]
+			
+  else (AFTER_PUT does not use createValue, whether we make it or not)
+    BEFORE_PUT placed before AFTER_PUT:
+    [
+		if (properties.putIfAbsent(value) == null) {
+			BEFORE_PUT
+			AFTER_PUT
+		}
+	]
+    
+    
+Do simple dataflow analysis for these checks using a homebrewed visitor.
+
+==================================
+
+createValue() side effects problem:
+
+createValue() {
+
+	Obj o = new ChannelHandler();
+	
+	field = ...; // definite side-effect
+	field.method(); // possible side-effect
+	System.out.println(o); // possible side-effect ("bad escape" of object)
+	return o; // good escape of object
+}
+
+Conservatively, if we see any of these side-effects, throw a warning for the user to look into it.
+Can use our visitor to handle some (and eventually all) of this.
+
+
+
+-----------------
+
+For something like this:
+
+public class TestStatementsBeforePutWithCreateValue {
+	
+	ConcurrentHashMap hm = new ConcurrentHashMap();
+
+	public void doBeforePut() {
+		hm.putIfAbsent("a_key", createvalue());
+	}
+
+	private String createvalue() {
+		String value = new String(" this is a value ");
+		value = "";
+		SIDE_EFFECT();
+		return value;
+	}
+}
+
+We can extract all the side-effect guys in createvalue() to the usual if(putIfAbsent() == null) { BEFORE_PUT } thing
+
+
+
+
+Later:
+// TODO: see unsure-of side-effects in invalid test
+// TODO: use CodeFormatter instead of whatever we are now
+What if the user is doing hm.put("a_key", someValue()); ? will our createValue blow up?
+
+Now:
+
+- "TestDifferentCreateValueLengths" - can only do this if we don't detect any reads for the value in AFTER_PUT or AFTER_IF

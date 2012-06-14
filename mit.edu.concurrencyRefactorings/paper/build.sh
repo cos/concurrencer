@@ -1,0 +1,6 @@
+latex concurrencer_ICSE09
+latex concurrencer_ICSE09
+bibtex concurrencer_ICSE09
+latex concurrencer_ICSE09
+dvips concurrencer_ICSE09.dvi -o concurrencer_ICSE09.ps 
+ps2pdf concurrencer_ICSE09.ps

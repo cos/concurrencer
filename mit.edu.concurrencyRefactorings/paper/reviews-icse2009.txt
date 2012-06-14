@@ -1,0 +1,309 @@
+From: "Joanne M Atlee and Paola Inverardi" <icse2009-papers-chairs@borbala.com>
+Reply-To: icse2009-papers-chairs@borbala.com
+To: dannydig@csail.mit.edu, marrero@csail.mit.edu, mernst@csail.mit.edu
+Cc: icse2009-papers-chairs@borbala.com, icse2009-papers-webadmin@borbala.com
+Subject: ICSE 2009 Paper Notification [401]
+Date: Fri, 21 Nov 2008 17:07:51 +0100
+
+Dear Danny, John and Michael,
+
+Thank you for your submission to ICSE 2009. The program committee 
+met on November 14-15 to consider the submissions to the Research 
+Paper track. We are pleased to inform you that your paper, 
+
+"Refactoring Sequential Java Code for Concurrency"
+
+has been accepted for presentation in the technical program and 
+for publication in the conference proceedings. The competition 
+was strong: only 50 of the 405 submissions were accepted, giving 
+an acceptance rate of 12.3%.
+
+We enclose a set of reviews of your paper. In your preparation of 
+the final paper, please make sure to incorporate the suggestions 
+of the reviewers.
+
+VERY IMPORTANT INFORMATION:
+
+1. Early in December, you will receive an author kit from Ladan Tahvildari,
+   the ICSE'09 Publications Chair.   
+
+2. The final camera-ready paper is due on February 12, 2009. This 
+   deadline is firm --- if you miss the deadline, your paper will 
+   not appear in the proceedings.
+
+3. You will find information about the format of the camera-ready 
+   version of your paper on the ICSE 2009 conference website.  The
+   format specifications are the same as were required for your initial
+   paper submission (IEEE Conference Proceedings format). Your paper 
+   must not exceed 11 pages.
+
+4. As mentioned in the call for papers, your paper submission and
+   acceptance implies that one of the paper's authors must attend and
+   present the paper at the conference, which will be held May 16-24
+   in Vancouver, Canada.  Early in the Spring, closer to the conference, 
+   we will post instructions on the web site to help you prepare for 
+   that presentation.  Failure to attend the meeting to present the 
+   paper will result in the removal of your paper from the proceedings; 
+   more specifically it will not appear in the IEEE or ACM Digital 
+   Libraries.
+
+We want to congratulate you on the acceptance of your paper, which is
+part of a strong and exciting conference program we have put together for
+ICSE 2009. We look forward to seeing you at the conference. 
+
+Sincerely,
+
+Joanne M. Atlee and Paola Inverardi
+Program Committee Co-Chairs
+ICSE 2009
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=
+
+First reviewer's review:
+
+          >>> Summary of the submission <<<
+
+The authors consider the problem of migrating existing
+sequential Java code to use the Java concurrency library.
+They do this by identifying patterns of shared data usage
+and program control that are well-supported by the library 
+and implement refactoring transformations to automate
+code migration. They report on a study using several
+non-trivial open-source code bases which use the concurrency
+library. The study reveals that the refactoring approach
+can avoid errors and exploit opportunities for using the library
+that the developers of applications made and missed, respectively.
+
+          >>> Evaluation <<<
+
+This seems like a very promising direction. I can imagine that
+developers might use this kind of tool support quite a bit over
+the next 5 years.
+
+While I found the presentation to be clear and sufficiently detailed,
+I couldn't shake the feeling that the approach is comprised of a
+small set of "special case" patterns and transformations. As with
+all refactoring approaches it is (of course) a set of patterns and
+transformations, but what doesn't come across in the presentation is
+how general the patterns are. For example, in section 3.2 you mention
+the use of data flow analysis, but you never describe exactly what
+the properties are that trigger your transformations (i.e., what
+facts are you looking for from the dataflow analysis). One way of
+getting at this is use some type of specification to characterize
+the patterns you are looking for, for example, there has been work
+on using temporal logic to patterns expressible by data flow analyses
+(see Lacey's HOSC'04 paper or Sorin Lerner's work).  If you could
+show that the patterns explicitly, then we'd get a better sense of
+the generality of the approach (and we'd know exactly what you have
+done). 
+
+If you have just implemented a few special cases then you've chosen
+well since the study shows they cover a number of realistic scenarios.
+In this case, you should include a more complete discussion of the
+limitations of those approaches.
+
+I think it is important to emphasize somewhere that your approach
+doesn't guarantee a thread-safe result. I know that you explain 
+that refactoring is under the user's control, so ultimately they
+are the ones who need to identify all thread-shared data and target
+it with the refactorings, I'm just suggesting that you re-emphasize
+this point in the intro and conclusions so that people don't 
+expect more from your technique than you offer.
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*
+
+Second reviewer's review:
+
+          >>> Summary of the submission <<<
+
+The paper proposes three refactoring techniques geared at exploiting at best
+the concurrency features provided by Java. The techniques are illustrated only 
+informally and through the use of examples. They are evaluated using examples
+from 6 well-known open source applications. The results are good, and the tool
+is publicly available. 
+
+          >>> Evaluation <<<
+
+The paper motivates well the techniques proposed and provides a convincing
+evaluation of their effectiveness. 
+
+The negatives about the paper are essentially two: 
+
+- the paper comes across as a collection of three refactorings. The reader is
+left wondering if these are enough to improve the concurrency behavior of Java
+programs... the authors hint at the end that they "plan to extend concurrencer
+to support many other exciting features provided by j.u.c". The paper,
+therefore, is more of a "proof-of-concept" than the presentation of a
+full-fledged tool. 
+
+- the description of the techniques used to perform the analysis is entirely
+informal. While this simplifies understanding (although sometimes the prose
+gets a little convoluted), some pseudocode might have been useful. 
+
+Minor issues: 
+
+- some typos and some "the" that should be added here and there. Also replace
+*more* with \emph{more} on p.3
+- wrt AtomicInteger the authors discuss only +/-. What about the other
+operations involving integers? 
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*
+
+Third reviewer's review:
+
+          >>> Summary of the submission <<<
+
+Describes a tool, Concurrencer, that can automatically transform Java
+code to take advantage of concurrency features provided by libraries.
+The tool currently supports three transformations as a proof of
+concept: porting int (eger) types to AtomicInteger, HashMaps to a
+concurrent variant, and automatically adapting recursive
+divide-and-conquer algorithms to a parallel version using a forkJoin
+feature upcoming in Java 7. The tool is evaluated by applying
+transformations on six open source systems. The evaluation confirms
+the expected benefits of automation: less work and fewer mistakes when
+making code concurrent.
+
+          >>> Evaluation <<<
+
+The goal of the Concurrencer tool is appealing and very timely. The paper
+does a great job at motivating its necessity and illustrating its benefits
+for software engineers. The evaluation provides a reasonable assessment of
+these benefits. The paper is very well written.
+
+In terms of explaining the contributions I found the paper a bit
+limited. The tool explores a specific point in the automation
+tradeoff: high automation with little user input, at the cost of
+reduced operating range. This is in contrast to annotation-based
+methods which can accommodate a much more varied spectrum of
+transformations, but require more effort from developers. Where the
+paper disappoints is that this tradeoff is not mentioned, and not
+assessed empirically. A discussion and evaluation of the range of
+code patterns that can be accommodated by the tool is desperately
+missing from the paper, and especially for the parallelization part.
+In fact the benefits of the approach as reported on in the evaluation
+are fairly self-evident. What I wanted to learn from the empirical
+work was: how many problems can be solved with Concurrencer? How often
+would one be able to use the tool?
+
+Unfortunately, the paper is mostly written as a tutorial, which is
+great for readability but does not help understand when the tool would
+work and when it would not. Without such detail, one remains with the
+impression that the tools simply aggregates a number of refactorings
+to solve a specific task, and when a certain pattern is not detected
+the benefit of the tool is marginal. Unfortunately the evaluation does
+not help understand this aspect because the target programs for the
+parallelization feature were carefully selected to be good
+candidates for the tool.
+
+Other comments:
+
+p.1 "1019 lines" not such a powerful example without the context (at least
+the size of the total code).
+
+Figure 1 is only readable in 200% zoom.
+
+p.2 "*more*" should be in bold or italics instead.
+
+p.6, 4.2 "The programmer need only select..." here it would be very useful
+to describe the general assumptions about the structure of the code that
+must hold for the tool to work.
+
+p.8 "we answer first" -> "the first..."
+
+p.8 I'm not sure I completely understand what is going on in the 2nd par of
+col 2. Presumably, if ConcurrentHashMap was put in place right away, then
+its API methods (e.g., putIfAbsent) were also used. What this not the case?
+
+p.8, 5.2 "the conversion was both correct" I'm always suspicious of
+unequivocal claims to correctness, but in any case, how was this verified?
+
+p.10, Section 5.4 seems very tangential to the main point of this
+paper. What has the performance of the transformation to do with the
+transformation, if the programmer selects the main parameters of the
+parallelization?
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*
+
+Fourth reviewer's review:
+
+          >>> Summary of the submission <<<
+
+The paper presents a new kind of refactorings that helps developers to
+transform a sequential program into a concurrent program. Two of the
+three refactorings were discovered by analyzing how open-source
+developers parallelize their sequential programs. All three
+refactoring are tool-supported; they transform Java programs into
+concurrent versions using a standard Java API for concurrency. For
+each refactoring, code transformations, resulting code, and employed
+APIs are described in detail and illustrated by examples. The
+developed refactoring tool can deal with real-world software systems
+and is publicly available. The evaluation demonstrates the tool's
+usefulness, the effectiveness of its transformations (i.e., as compared to
+manually transformed programs), and a significant performance
+acceleration for the refactored programs.
+
+          >>> Evaluation <<<
+
+Comments for authors: This paper presents a set of three automated
+concurrency refactorings for Java programs. These refactorings have
+been integrated into the Eclipse refactoring engine, and a small study
+was performed to assess their feasibility. Clearly, with the move
+toward multicore processors it is becoming increasingly important for
+applications to use parallelism. The refactorings presented here can
+ease the burden of developers converting their existing sequential
+codes to parallel codes; â therefore this work is focused on an
+important problem.
+
+This description seems to be of initial experiments with these ideas.
+The discussions with respect to the safety of the refactorings need
+further elaboration. The two enabling refactorings (int to
+AtomicInteger and HashMap to ConcurrentHashMap) both appear to be
+unsafe, particularly when working with code that already includes
+synchronization locks. Consider a program with both of the code
+fragments appearing in the second column of page 3. â The methodology
+as presented would remove the lock around the first fragment, changing
+it to use addAndGet without removing it from the second
+fragment. â This would allow the code in the first fragment to be
+interleaved with the code in the second fragment, a behavior that
+could not have existed in the original version. â Similar problems can
+occur with the HashMap refactoring. In asserting the safety of these 
+transformations, these issues should be clarified.
+
+Additionally, for the ConcurrentHashMap refactoring, the authors
+discuss the fact that several of the changes will create situations
+where additional objects are created and initialized without
+discussing the potential for additional cost thereby. Also, the
+dataflow analysis described for this refactoring could be described
+in a little more detail. In particular, design decisions
+w.r.t. precision versus performance are important to explain.
+
+The reported study showed that hand refactored code was more prone to
+errors and omissions than automatically refactored code. The
+parallelized algorithms showed speedup on multicore processors. Some
+performance data on the refactoring tool would give an idea of
+transformation scalability, that is, any potential limitations for huge
+programs making massive use of HashMaps.
+
+EVALUATION:
+Points in favour
+  - Solution for a relevant problem in software engineering
+  - Good initial evaluation of the proposed approach
+  - Publicly available prototype
+  - Well-structured and well-written presentation
+
+Points against
+  - Non-trivial program analysis used by one refactoring is vaguely
+   described
+
+Detailed comments:
+  In several places ConcurrentHashMap is improperly hyphenated
+  Section 1, Para 9, Sentence 5: change "is for programmer" to "is for
+  the programmer"
+
+ - A citation or a little more details should be given after
+  "For example, the developers of six widely used open-source
+  projects changed 1019 lines when converting to use the j.u.c
+  utilities."
+
+*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*=--=*
