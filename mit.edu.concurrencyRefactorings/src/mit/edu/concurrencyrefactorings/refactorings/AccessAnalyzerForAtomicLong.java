@@ -211,7 +211,8 @@ public class AccessAnalyzerForAtomicLong extends ASTVisitor {
 		AST ast = expression.getAST();
 		PrefixExpression newPrefixExpression = ast.newPrefixExpression();
 		newPrefixExpression.setOperator(PrefixExpression.Operator.MINUS);
-		boolean needsParentheses= //ASTNodes.needsParentheses(expression);
+		boolean needsParentheses=
+			//ASTNodes.needsParentheses(expression);
 				(new Object() {  
 					public boolean needsParentheses(Expression expression) {
 						int type= expression.getNodeType();
