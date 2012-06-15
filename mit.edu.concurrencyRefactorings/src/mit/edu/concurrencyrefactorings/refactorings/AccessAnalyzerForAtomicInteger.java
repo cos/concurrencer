@@ -213,14 +213,21 @@ public class AccessAnalyzerForAtomicInteger extends ASTVisitor {
 		AST ast = expression.getAST();
 		PrefixExpression newPrefixExpression = ast.newPrefixExpression();
 		newPrefixExpression.setOperator(PrefixExpression.Operator.MINUS);
-		boolean needsParentheses= true;// ASTNodes.needsParentheses(expression);
+		boolean needsParentheses= // ASTNodes.needsParentheses(expression); 
+				(new Object() {  
+					public boolean needsParentheses(Expression expression) {
+						int type= expression.getNodeType();
+						return type == ASTNode.INFIX_EXPRESSION || type == ASTNode.CONDITIONAL_EXPRESSION ||
+								type == ASTNode.PREFIX_EXPRESSION || type == ASTNode.POSTFIX_EXPRESSION ||
+								type == ASTNode.CAST_EXPRESSION || type == ASTNode.INSTANCEOF_EXPRESSION;
+					}
+				}).needsParentheses(expression);
 		ASTNode copyExpression =  ASTNode.copySubtree(ast, expression);   //fRewriter.createCopyTarget(expression);
 		if (needsParentheses) {
 			ParenthesizedExpression p = ast.newParenthesizedExpression();
 			p.setExpression((Expression) copyExpression);
 			copyExpression = p;
 		}
-		
 		newPrefixExpression.setOperand((Expression) copyExpression);
 		return newPrefixExpression;
 	}
