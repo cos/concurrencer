@@ -114,7 +114,7 @@ public class AccessAnalyzerForConcurrentHashMap extends ASTVisitor {
 		fDeclaringClass= declaringClass;
 		fRewriter= rewriter;
 		fImportRewriter= importRewrite;
-		fGroupDescriptions= new ArrayList();
+		fGroupDescriptions= new ArrayList<TextEditGroup>();
 		fMethodName = null;
 		try {
 			fIsFieldFinal= Flags.isFinal(refactoring.getField().getFlags());
@@ -128,7 +128,7 @@ public class AccessAnalyzerForConcurrentHashMap extends ASTVisitor {
 		return fStatus;
 	}
 
-	public Collection getGroupDescriptions() {
+	public Collection<TextEditGroup> getGroupDescriptions() {
 		return fGroupDescriptions;
 	}
 	
@@ -769,6 +769,8 @@ public class AccessAnalyzerForConcurrentHashMap extends ASTVisitor {
 		ASTNode nodeForCreateValueMethod = fRewriter.createStringPlaceholder(codeForCreateValueMethodUnindented, ASTNode.METHOD_DECLARATION);
 		
 		// TODO Use ReferencesFinder to find possible side-effects
+		// ReferencesFinder rf = new ReferencesFinder();
+		//Assert.isTrue(fDeclaringClass != null, "null declaring class");
 		fRewriter.getListRewrite(fDeclaringClass, descriptor).insertAfter(nodeForCreateValueMethod, methodContainingPutIfAbsent, createGroupDescription("CreateValue() Method"));
 	}
 	
@@ -1375,9 +1377,9 @@ public class AccessAnalyzerForConcurrentHashMap extends ASTVisitor {
 			return false;
 		}
 		
-		checkSynchronizedBlock(methodInvocNode, methodInvocNode, METHOD_INVOCATION);
-		checkSynchronizedMethod(methodInvocNode, methodInvocNode, METHOD_INVOCATION);
-		// TODO check return type (medium priority)
+		boolean checkSynchronizedBlock = checkSynchronizedBlock(methodInvocNode, methodInvocNode, METHOD_INVOCATION);
+		boolean checkSynchronizedMethod = checkSynchronizedMethod(methodInvocNode, methodInvocNode, METHOD_INVOCATION);
+		// TODO check return type (medium priority) throw Exception if false?
 		
 		return true;
 	}
