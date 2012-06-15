@@ -1,8 +1,8 @@
 package object_out;
 
-import jsr166y.forkjoin.ForkJoinExecutor;
-import jsr166y.forkjoin.ForkJoinPool;
-import jsr166y.forkjoin.RecursiveAction;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
+
 import forkJoin.mergeSort.ArrayUtil;
 
 public class SeqQuickSort {
@@ -16,7 +16,7 @@ public class SeqQuickSort {
 	// quicksort a[left] to a[right]
 	public void quicksort(double[] a, int left, int right) {
 		int processorCount = Runtime.getRuntime().availableProcessors();
-		ForkJoinExecutor pool = new ForkJoinPool(processorCount);
+		ForkJoinPool pool = new ForkJoinPool(processorCount);
 		QuicksortImpl aQuicksortImpl = new QuicksortImpl(a, left, right);
 		pool.invoke(aQuicksortImpl);
 	}
@@ -38,7 +38,7 @@ public class SeqQuickSort {
 			int i = partition(a, left, right);
 			QuicksortImpl task1 = new QuicksortImpl(a, left, i - 1);
 			QuicksortImpl task2 = new QuicksortImpl(a, i + 1, right);
-			forkJoin(task1, task2);
+			invokeAll(task1, task2);
 		}
 		/**
 		 * Quicksort code from Sedgewick 7.1, 7.2.
