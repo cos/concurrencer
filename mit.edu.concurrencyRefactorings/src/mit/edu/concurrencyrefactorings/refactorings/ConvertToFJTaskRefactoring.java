@@ -36,15 +36,16 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.Message;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Modifier.ModifierKeyword;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.ReturnStatement;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
@@ -62,6 +63,7 @@ import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.jdt.internal.corext.dom.ModifierRewrite;
 import org.eclipse.jdt.internal.corext.dom.NodeFinder;
 import org.eclipse.jdt.internal.corext.refactoring.Checks;
+import org.eclipse.jdt.internal.corext.refactoring.JavaRefactoringDescriptorUtil;
 import org.eclipse.jdt.internal.corext.refactoring.base.JavaStatusContext;
 import org.eclipse.jdt.internal.corext.refactoring.changes.DynamicValidationRefactoringChange;
 import org.eclipse.jdt.internal.corext.refactoring.changes.TextChangeCompatibility;
@@ -86,38 +88,38 @@ import org.eclipse.text.edits.TextEditGroup;
 
 public class ConvertToFJTaskRefactoring extends Refactoring {
 
-	private final class StatementVisitor extends ASTVisitor {
-		private final List<Statement> statements;
+//	private final class StatementVisitor extends ASTVisitor {  TODO What is the point of this class?
+//		private final List<Statement> statements;
+//
+//		private StatementVisitor(List<Statement> statementsInOriginalMethod) {
+//			this.statements= statementsInOriginalMethod;
+//		}
+//
+//		public boolean visit(ExpressionStatement node) {
+//			statements.add(node);
+//			return false;
+//		}
+//
+//		public boolean visit(VariableDeclarationStatement node) {
+//			statements.add(node);
+//			return false;
+//		}
+//		
+//		public boolean visit(ReturnStatement node) {
+//			statements.add(node);
+//			return false;
+//		}
+//	}
 
-		private StatementVisitor(List<Statement> statementsInOriginalMethod) {
-			this.statements= statementsInOriginalMethod;
-		}
-
-		public boolean visit(ExpressionStatement node) {
-			statements.add(node);
-			return false;
-		}
-
-		public boolean visit(VariableDeclarationStatement node) {
-			statements.add(node);
-			return false;
-		}
-		
-		public boolean visit(ReturnStatement node) {
-			statements.add(node);
-			return false;
-		}
-	}
-
-	private static final String NO_NAME= "";
+	private static final String NO_NAME= ""; //$NON-NLS-1$
 	private IMethod fMethod;
 	private CompilationUnit fRoot;
 	private MethodDeclaration fMethodDeclaration;
 	private ASTRewrite fRewriter;
 	private TextChangeManager fChangeManager;
 	private ImportRewrite fImportRewrite;
-	private static final String LINKED_NAME= "name"; //$NON-NLS-1$
-	private String nameForFJTaskSubtype= "";
+//	private static final String LINKED_NAME= "name"; //$NON-NLS-1$
+	private String nameForFJTaskSubtype= ""; //$NON-NLS-1$
 	private String sequentialThreshold;
 	private boolean fInfixExpressionFlag= false;
 	private boolean fMethodInvocationFlag= false;
@@ -136,13 +138,13 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		
 		RefactoringStatus result= new RefactoringStatus();
 		fChangeManager.clear();
-		pm.beginTask("", 12);
-		pm.setTaskName("Convert to FJTask checking preconditions");
+		pm.beginTask("", 12); //$NON-NLS-1$
+		pm.setTaskName("Convert to FJTask checking preconditions"); //$NON-NLS-1$
 		pm.worked(1);
 			
-		pm.setTaskName("ConvertToFJTask analyze preconditions");	 
+		pm.setTaskName("ConvertToFJTask analyze preconditions");	//$NON-NLS-1$ 
 		
-		ITypeBinding declaringClass= 
+	//	ITypeBinding declaringClass= 
 			((AbstractTypeDeclaration)ASTNodes.getParent(fMethodDeclaration, AbstractTypeDeclaration.class)).resolveBinding();
 		List<TextEditGroup> ownerDescriptions= new ArrayList<TextEditGroup>();
 		ICompilationUnit owner= fMethod.getCompilationUnit();
@@ -172,31 +174,31 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	}
 	
 	private Collection<TextEditGroup> reimplementOriginalRecursiveFunction() {
-		TextEditGroup gd= new TextEditGroup("Reimplement recursive method to invoke the FJTask framework");
+		TextEditGroup gd= new TextEditGroup("Reimplement recursive method to invoke the FJTask framework"); //$NON-NLS-1$
 		
 		AST ast= fRoot.getAST();
 		
 		Block originalBody= fMethodDeclaration.getBody();
 		Block newMethodBody= ast.newBlock();
-		List newStatements= newMethodBody.statements();
+		List<ASTNode> newStatements= newMethodBody.statements();
 		
-		String declareNumOfAvailableResource= "int processorCount = Runtime.getRuntime().availableProcessors();";
+		String declareNumOfAvailableResource= "int processorCount = Runtime.getRuntime().availableProcessors();"; //$NON-NLS-1$
 		ASTNode declNumOfAvailableResources= fRewriter.createStringPlaceholder(declareNumOfAvailableResource, ASTNode.EXPRESSION_STATEMENT);
 		newStatements.add(declNumOfAvailableResources);
 		
-		String pool= new String("ForkJoinPool pool = new ForkJoinPool(processorCount);");
+		String pool= new String("ForkJoinPool pool = new ForkJoinPool(processorCount);"); //$NON-NLS-1$
 		ASTNode poolNode= fRewriter.createStringPlaceholder(pool, ASTNode.EXPRESSION_STATEMENT);
 		newStatements.add(poolNode);
 		
 		VariableDeclarationFragment newTaskDeclFragment= ast.newVariableDeclarationFragment();
-		String taskInstanceName= "a" + nameForFJTaskSubtype;
+		String taskInstanceName= "a" + nameForFJTaskSubtype; //$NON-NLS-1$
 		newTaskDeclFragment.setName(ast.newSimpleName(taskInstanceName));
 		ClassInstanceCreation createTaskInstance= ast.newClassInstanceCreation();
 		newTaskDeclFragment.setInitializer(createTaskInstance);
 		createTaskInstance.setType(ast.newSimpleType(ast.newSimpleName(nameForFJTaskSubtype)));
-		List argumentsForTaskCreation= createTaskInstance.arguments();
+		List<SimpleName> argumentsForTaskCreation= createTaskInstance.arguments();
 		
-		List recursiveMethodParameters= fMethodDeclaration.parameters();
+		List<ASTNode> recursiveMethodParameters= fMethodDeclaration.parameters();
 		for (Object par : recursiveMethodParameters) {
 			SingleVariableDeclaration parameter= (SingleVariableDeclaration) par;
 			argumentsForTaskCreation.add(ast.newSimpleName(parameter.getName().getIdentifier()));
@@ -206,12 +208,12 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		declTask.setType(ast.newSimpleType(ast.newSimpleName(nameForFJTaskSubtype)));
 		newStatements.add(declTask);
 		
-		String poolInvoke= "pool.invoke(" + taskInstanceName +");";
+		String poolInvoke= "pool.invoke(" + taskInstanceName +");"; //$NON-NLS-1$
 		ASTNode poolInvokeNode= fRewriter.createStringPlaceholder(poolInvoke, ASTNode.EXPRESSION_STATEMENT);
 		newStatements.add(poolInvokeNode);
 		
 		if (! recursiveMethodReturnsVoid()) {
-			String returnSt= "return " + taskInstanceName + ".result;";
+			String returnSt= "return " + taskInstanceName + ".result;"; //$NON-NLS-1$
 			ASTNode returnNode= fRewriter.createStringPlaceholder(returnSt, ASTNode.EXPRESSION_STATEMENT);
 			newStatements.add(returnNode);
 		}
@@ -224,19 +226,19 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	}
 
 	private void addImports(ImportRewrite importRewrite) {
-		importRewrite.addImport("java.util.concurrent.ForkJoinPool");
-		importRewrite.addImport("java.util.concurrent.RecursiveAction");
+		importRewrite.addImport("java.util.concurrent.ForkJoinPool"); //$NON-NLS-1$
+		importRewrite.addImport("java.util.concurrent.RecursiveAction"); //$NON-NLS-1$
 	}
 
 	private Collection<TextEditGroup> addCreateTaskClass(CompilationUnit root, RefactoringStatus result) {
 		
 		
-		TextEditGroup gd= new TextEditGroup("Create RecursiveAction Subtype");
+		TextEditGroup gd= new TextEditGroup("Create RecursiveAction Subtype"); //$NON-NLS-1$
 		
 		AST ast= root.getAST();
 		TypeDeclaration recursiveActionSubtype= ast.newTypeDeclaration();
 		recursiveActionSubtype.setName(ast.newSimpleName(nameForFJTaskSubtype));
-		recursiveActionSubtype.setSuperclassType(ast.newSimpleType(ast.newSimpleName("RecursiveAction")));		
+		recursiveActionSubtype.setSuperclassType(ast.newSimpleType(ast.newSimpleName("RecursiveAction")));	//$NON-NLS-1$	
 		ModifierRewrite.create(fRewriter, recursiveActionSubtype).copyAllModifiers(fMethodDeclaration, gd);
 		
 		createFields(recursiveActionSubtype, ast);
@@ -263,37 +265,37 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 
 	private void createComputeMethod(TypeDeclaration recursiveActionSubtype, AST ast, RefactoringStatus result) {
 		MethodDeclaration computeMethod= ast.newMethodDeclaration();
-		computeMethod.setName(ast.newSimpleName("compute"));
+		computeMethod.setName(ast.newSimpleName("compute")); //$NON-NLS-1$
 		computeMethod.modifiers().add(ast.newModifier(ModifierKeyword.PROTECTED_KEYWORD));
 		
-		final TextEditGroup editGroup= new TextEditGroup("generate compute() method");
+		final TextEditGroup editGroup= new TextEditGroup("generate compute() method"); //$NON-NLS-1$
 		
 		Statement recursionBaseCaseBranch= identifyRecursionBaseCaseBranch(fMethodDeclaration.getBody());
 		if (recursionBaseCaseBranch== null) {
 			RefactoringStatus fatalError= new RefactoringStatus();
-			fatalError.addFatalError("Cannot identify the base " +
-					"case for recursion. Maybe " + fMethod.getElementName() + " is not a recursive divide-and-conquer");
+			fatalError.addFatalError("Cannot identify the base " + //$NON-NLS-1$
+					"case for recursion. Maybe " + fMethod.getElementName() + " is not a recursive divide-and-conquer"); //$NON-NLS-1$
 			result.merge(fatalError);
 			return;
 		}
 
 		final ASTRewrite scratchRewriter= ASTRewrite.create(fRoot.getAST());
-		ASTNode sequentialThresholdCheck= scratchRewriter.createStringPlaceholder("(" + sequentialThreshold + ")", ASTNode.PARENTHESIZED_EXPRESSION);
+		ASTNode sequentialThresholdCheck= scratchRewriter.createStringPlaceholder("(" + sequentialThreshold + ")", ASTNode.PARENTHESIZED_EXPRESSION); //$NON-NLS-1$
 		
 		IfStatement enclosingIf= (IfStatement) recursionBaseCaseBranch.getParent();
 		scratchRewriter.replace(enclosingIf.getExpression(), (Expression) sequentialThresholdCheck, editGroup);
 		
 		if (recursionBaseCaseBranch instanceof Block) {
 			Block baseCaseBlock= (Block) recursionBaseCaseBranch;
-			List statementsInBaseCase= baseCaseBlock.statements();
-			ASTNode lastStatementInBaseCase= (ASTNode) statementsInBaseCase.get(statementsInBaseCase.size() - 1 );
+			List<ASTNode> statementsInBaseCase= baseCaseBlock.statements();
+			ASTNode lastStatementInBaseCase= statementsInBaseCase.get(statementsInBaseCase.size() - 1 );
 			if (recursiveMethodReturnsVoid()) {
 				ExpressionStatement sequentialMethodInvocation= ast.newExpressionStatement(createSequentialMethodInvocation(ast));
 				ListRewrite listRewriteForBaseBlock= scratchRewriter.getListRewrite(baseCaseBlock, Block.STATEMENTS_PROPERTY);
 				listRewriteForBaseBlock.insertBefore(sequentialMethodInvocation, lastStatementInBaseCase, editGroup);
 			} else {
 				Assignment assignmentToResult= ast.newAssignment();
-				assignmentToResult.setLeftHandSide(ast.newSimpleName("result"));
+				assignmentToResult.setLeftHandSide(ast.newSimpleName("result")); //$NON-NLS-1$
 				assignmentToResult.setRightHandSide(createSequentialMethodInvocation(ast));
 				ExpressionStatement newExpressionStatement= ast.newExpressionStatement(assignmentToResult);
 				
@@ -304,13 +306,13 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			}
 		} else if (recursionBaseCaseBranch instanceof ReturnStatement) {
 			Block basecaseBlock= ast.newBlock();
-			List basecaseStatements= basecaseBlock.statements();
+			List<ASTNode> basecaseStatements= basecaseBlock.statements();
 			if (recursiveMethodReturnsVoid()) {
 				ExpressionStatement sequentialMethodInvocation= ast.newExpressionStatement(createSequentialMethodInvocation(ast));
 				basecaseStatements.add(sequentialMethodInvocation);
 			} else {
 				Assignment assignmentToResult= ast.newAssignment();
-				assignmentToResult.setLeftHandSide(ast.newSimpleName("result"));
+				assignmentToResult.setLeftHandSide(ast.newSimpleName("result")); //$NON-NLS-1$
 				assignmentToResult.setRightHandSide(createSequentialMethodInvocation(ast));
 				ExpressionStatement newExpressionStatement= ast.newExpressionStatement(assignmentToResult);
 				basecaseStatements.add(newExpressionStatement);
@@ -329,19 +331,19 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 				IMethodBinding bindingForMethodCall= methodCall.resolveMethodBinding();
 				IMethodBinding bindingForMethodDeclaration= fMethodDeclaration.resolveBinding();
 				if (Bindings.equals(bindingForMethodDeclaration, bindingForMethodCall)) {
-					String codeForTaskDecl= nameForFJTaskSubtype + " task" + ++taskNumber[0] + 
-				    " = new " + nameForFJTaskSubtype + "(";
+					String codeForTaskDecl= nameForFJTaskSubtype + " task" + ++taskNumber[0] +  //$NON-NLS-1$
+				    " = new " + nameForFJTaskSubtype + "("; //$NON-NLS-1$
 					String methodArguments= "";
-					List arguments= methodCall.arguments();
-					for (Iterator iterator= arguments.iterator(); iterator
+					List<Expression> arguments= methodCall.arguments();
+					for (Iterator<Expression> iterator= arguments.iterator(); iterator
 							.hasNext();) {
-						ASTNode argument= (ASTNode) iterator.next();
+						ASTNode argument= iterator.next();
 						methodArguments += argument.toString();
 						if (iterator.hasNext()) {
-							methodArguments += ", ";
+							methodArguments += ", "; //$NON-NLS-1$
 						}
 					}
-					codeForTaskDecl += methodArguments + ");";
+					codeForTaskDecl += methodArguments + ");"; //$NON-NLS-1$
 					VariableDeclarationStatement taskDeclStatement= (VariableDeclarationStatement) scratchRewriter.createStringPlaceholder(codeForTaskDecl , ASTNode.VARIABLE_DECLARATION_STATEMENT);
 					Statement parentOfMethodCall= findParentStatement(methodCall);
 					if (recursiveMethodReturnsVoid()) {
@@ -367,14 +369,14 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 								scratchRewriter.replace(parentOfMethodCall, taskDeclStatement, editGroup);
 							}  
 							else
-								System.err.println("Scenario not handled yet: recursive method call is within " + parentOfMethodCall.toString() );
+								System.err.println("Scenario not handled yet: recursive method call is within " + parentOfMethodCall.toString() ); //$NON-NLS-1$
 						}
 						else if (parentOfMethodCall instanceof ReturnStatement) {
 							ASTNode tempNode= parentOfMethodCall.getParent();
 							if(tempNode instanceof Block) {
 								Block blockWithReturn= (Block) tempNode;
 								ListRewrite listRewriteForBlock= scratchRewriter.getListRewrite(blockWithReturn, Block.STATEMENTS_PROPERTY);
-								List statementsInBlockWithReturn= blockWithReturn.statements();
+								List<ASTNode> statementsInBlockWithReturn= blockWithReturn.statements();
 								Statement lastStatementInBlock= (Statement) statementsInBlockWithReturn.get(statementsInBlockWithReturn.size() - 1);
 								if (lastStatementInBlock instanceof ReturnStatement) {  //TODO Do I need this check?
 									listRewriteForBlock.insertBefore(taskDeclStatement, lastStatementInBlock, editGroup);
@@ -388,10 +390,10 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 								fMethodInvocationFlag= true;
 							}
 							else
-								System.err.println("Scenario not handled yet: recursive method call is within " + parentOfMethodCall.toString() );
+								System.err.println("Scenario not handled yet: recursive method call is within " + parentOfMethodCall.toString() ); //$NON-NLS-1$
 						}
 						else 
-							System.err.println("Scenario not handled yet: recursive method call is within " + parentOfMethodCall.toString() );
+							System.err.println("Scenario not handled yet: recursive method call is within " + parentOfMethodCall.toString() ); //$NON-NLS-1$
 					}
 					lastStatementWithRecursiveMethodInvocation.add(parentOfMethodCall);
 					
@@ -406,10 +408,10 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			MethodInvocation forkJoinInvocation= ast.newMethodInvocation();
 			//TODO the code below assumes that there are just two tasks passed to the
 			// invokeAll. Need to implement the scenario with more than two tasks - COMPLETED (I think, seemed like was too easy...)
-			forkJoinInvocation.setName(ast.newSimpleName("invokeAll"));
-			List argumentsForkJoin= forkJoinInvocation.arguments();
+			forkJoinInvocation.setName(ast.newSimpleName("invokeAll")); //$NON-NLS-1$
+			List<Expression> argumentsForkJoin= forkJoinInvocation.arguments();
 			for (int i= 1; i <= taskNumber[0]; i++) {
-				argumentsForkJoin.add(ast.newSimpleName("task" + i));
+				argumentsForkJoin.add(ast.newSimpleName("task" + i)); //$NON-NLS-1$
 			}
 			Statement lastStatementWithRecursiveCall= lastStatementWithRecursiveMethodInvocation.get(lastStatementWithRecursiveMethodInvocation.size() - 1);
 			
@@ -417,33 +419,33 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 				if (partialComputationsNames.size() >= 1)
 					if (lastStatementWithRecursiveCall instanceof VariableDeclarationStatement) {
 						for (int i= partialComputationsNames.size() - 1; i >= 0 ; ) {
-							String varStatement= typesOfComputations.get(i) + " " + partialComputationsNames.get(i) + " = task" + (i + 1) + ".result;";
+							String varStatement= typesOfComputations.get(i) + " " + partialComputationsNames.get(i) + " = task" + (i + 1) + ".result;"; //$NON-NLS-1$
 							ASTNode variableStatement= scratchRewriter.createStringPlaceholder(varStatement, ASTNode.VARIABLE_DECLARATION_STATEMENT);
 							listRewriteForBlock.insertAfter(variableStatement, lastStatementWithRecursiveCall, editGroup);
 							i--;
 						}
 					} else if (lastStatementWithRecursiveCall instanceof ExpressionStatement) {
 						for (int i= partialComputationsNames.size() - 1; i >= 0 ; ) {
-							String varStatement= partialComputationsNames.get(i) + " = task" + (i + 1) + ".result;";
+							String varStatement= partialComputationsNames.get(i) + " = task" + (i + 1) + ".result;"; //$NON-NLS-1$
 							ASTNode exprStatement= scratchRewriter.createStringPlaceholder(varStatement, ASTNode.EXPRESSION_STATEMENT);
 							listRewriteForBlock.insertAfter(exprStatement, lastStatementWithRecursiveCall, editGroup);
 							i--;
 						}
 					}
 				
-				List statementsInBlockWithTaskDecl= blockContainingTaskDecl.statements();
+				List<ASTNode> statementsInBlockWithTaskDecl= blockContainingTaskDecl.statements();
 				Statement lastStatementInBlock= (Statement) statementsInBlockWithTaskDecl.get(statementsInBlockWithTaskDecl.size() - 1);
 				if (lastStatementInBlock instanceof ReturnStatement) {
 					if(fInfixExpressionFlag) {
 						Assignment assignToResult= ast.newAssignment();
-						assignToResult.setLeftHandSide(ast.newSimpleName("result"));
+						assignToResult.setLeftHandSide(ast.newSimpleName("result")); //$NON-NLS-1$
 						InfixExpression infixExpression= ((InfixExpression)(ASTNode.copySubtree(ast, ((ReturnStatement)lastStatementInBlock).getExpression())));
 						int taskNum= 1;
-						infixExpression.setLeftOperand((Expression) ast.newQualifiedName(ast.newSimpleName("task" + taskNum++), ast.newSimpleName("result")));
-						infixExpression.setRightOperand((Expression) ast.newQualifiedName(ast.newSimpleName("task" + taskNum++), ast.newSimpleName("result")));
-						List extendedOperands = infixExpression.extendedOperands();
+						infixExpression.setLeftOperand((Expression) ast.newQualifiedName(ast.newSimpleName("task" + taskNum++), ast.newSimpleName("result"))); //$NON-NLS-1$
+						infixExpression.setRightOperand((Expression) ast.newQualifiedName(ast.newSimpleName("task" + taskNum++), ast.newSimpleName("result"))); //$NON-NLS-1$
+						List<Expression> extendedOperands = infixExpression.extendedOperands();
 						for (int i= 0; i < extendedOperands.size(); ) {
-							extendedOperands.set(i, (Expression) ast.newQualifiedName(ast.newSimpleName("task" + taskNum++), ast.newSimpleName("result")));
+							extendedOperands.set(i, (Expression) ast.newQualifiedName(ast.newSimpleName("task" + taskNum++), ast.newSimpleName("result"))); //$NON-NLS-1$
 							i++;
 						}
 						assignToResult.setRightHandSide(infixExpression);
@@ -451,19 +453,19 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 					}
 					else if(fMethodInvocationFlag) {
 						Assignment assignToResult= ast.newAssignment();
-						assignToResult.setLeftHandSide(ast.newSimpleName("result"));
+						assignToResult.setLeftHandSide(ast.newSimpleName("result")); //$NON-NLS-1$
 						MethodInvocation methodInvocation= ((MethodInvocation)(ASTNode.copySubtree(ast, ((ReturnStatement)lastStatementInBlock).getExpression())));
 						int taskNum= 1;
-						List methodArguments= methodInvocation.arguments();
+						List<Expression> methodArguments= methodInvocation.arguments();
 						for (int index= 0; index < methodArguments.size(); ) {
-							methodArguments.set(index++, (Expression) ast.newQualifiedName(ast.newSimpleName("task" + taskNum++), ast.newSimpleName("result")));
+							methodArguments.set(index++, (Expression) ast.newQualifiedName(ast.newSimpleName("task" + taskNum++), ast.newSimpleName("result"))); //$NON-NLS-1$
 						}
 						assignToResult.setRightHandSide(methodInvocation);
 						scratchRewriter.replace(lastStatementInBlock, ast.newExpressionStatement(assignToResult), editGroup);
 					}
 					else {
 						Assignment assignToResult= ast.newAssignment();
-						assignToResult.setLeftHandSide(ast.newSimpleName("result"));
+						assignToResult.setLeftHandSide(ast.newSimpleName("result")); //$NON-NLS-1$
 						assignToResult.setRightHandSide((Expression) ASTNode.copySubtree(ast, ((ReturnStatement) lastStatementInBlock).getExpression()));
 						scratchRewriter.replace(lastStatementInBlock, ast.newExpressionStatement(assignToResult), editGroup);
 					}
@@ -477,9 +479,9 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			TextEdit edits= scratchRewriter.rewriteAST();
 			IDocument scratchDocument= new Document(((ICompilationUnit)fRoot.getJavaElement()).getSource());
 			try {
-				System.out.println(scratchDocument.get());
+				//System.out.println(scratchDocument.get());
 				edits.apply(scratchDocument);
-				System.out.println(scratchDocument.get());
+				//System.out.println(scratchDocument.get());
 				
 				ASTParser parser= ASTParser.newParser(AST.JLS3);
 				parser.setSource(scratchDocument.get().toCharArray());
@@ -533,25 +535,25 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	private boolean methodsHaveSameSignature(
 			MethodDeclaration methodDeclaration,
 			MethodDeclaration methodDeclaration2) {
-		String methodArguments= "";
-		List arguments= methodDeclaration.parameters();
-		for (Iterator iterator= arguments.iterator(); iterator
+		String methodArguments= ""; //$NON-NLS-1$
+		List<ASTNode> arguments= methodDeclaration.parameters();
+		for (Iterator<ASTNode> iterator= arguments.iterator(); iterator
 				.hasNext();) {
-			ASTNode argument= (ASTNode) iterator.next();
+			ASTNode argument= iterator.next();
 			methodArguments += argument.toString();
 			if (iterator.hasNext()) {
-				methodArguments += ", ";
+				methodArguments += ", "; //$NON-NLS-1$
 			}
 		}
 		
-		String methodArguments2= "";
+		String methodArguments2= ""; //$NON-NLS-1$
 		arguments= methodDeclaration2.parameters();
-		for (Iterator iterator= arguments.iterator(); iterator
+		for (Iterator<ASTNode> iterator= arguments.iterator(); iterator
 				.hasNext();) {
-			ASTNode argument= (ASTNode) iterator.next();
+			ASTNode argument= iterator.next();
 			methodArguments2 += argument.toString();
 			if (iterator.hasNext()) {
-				methodArguments2 += ", ";
+				methodArguments2 += ", "; //$NON-NLS-1$
 			}
 		}
 		return methodArguments.equals(methodArguments2);
@@ -561,8 +563,8 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	private MethodInvocation createSequentialMethodInvocation(AST ast) {
 		MethodInvocation invokeSequentialMethod= ast.newMethodInvocation();
 		invokeSequentialMethod.setName(ast.newSimpleName(fMethod.getElementName()));
-		List argumentsForInvokingSeqMethod= invokeSequentialMethod.arguments();
-		List recursiveMethodParameters= fMethodDeclaration.parameters();
+		List<Expression> argumentsForInvokingSeqMethod= invokeSequentialMethod.arguments();
+		List<ASTNode> recursiveMethodParameters= fMethodDeclaration.parameters();
 		for (Object par : recursiveMethodParameters) {
 			SingleVariableDeclaration parameter= (SingleVariableDeclaration) par;
 			argumentsForInvokingSeqMethod.add(ast.newSimpleName(parameter.getName().getIdentifier()));
@@ -590,8 +592,8 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			private boolean statementEndsWithReturn(Statement statement) {
 				if (statement instanceof Block) {
 					Block blockStatement= (Block) statement;
-					List statements= blockStatement.statements();
-					ASTNode lastStatement= (ASTNode) statements.get(statements.size() - 1);
+					List<ASTNode> statements= blockStatement.statements();
+					ASTNode lastStatement= statements.get(statements.size() - 1);
 					if ( (lastStatement instanceof ReturnStatement)) {
 						return true;
 					}
@@ -638,8 +640,8 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		MethodDeclaration newConstructor= ast.newMethodDeclaration();
 		newConstructor.setConstructor(true);
 		newConstructor.setName(ast.newSimpleName(nameForFJTaskSubtype));
-		List constructorParameters= newConstructor.parameters();
-		List recursiveMethodParameters= fMethodDeclaration.parameters();
+		List<ASTNode> constructorParameters= newConstructor.parameters();
+		List<ASTNode> recursiveMethodParameters= fMethodDeclaration.parameters();
 		for (Object par : recursiveMethodParameters) {
 			SingleVariableDeclaration parameter= (SingleVariableDeclaration) par;
 			constructorParameters.add(ASTNode.copySubtree(ast, parameter));
@@ -650,7 +652,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		Block newConstructorBlock= ast.newBlock();
 		newConstructor.setBody(newConstructorBlock);
 		
-		List newConstructorStatements= newConstructorBlock.statements();
+		List<ASTNode> newConstructorStatements= newConstructorBlock.statements();
 		for (Object par : recursiveMethodParameters) {
 			SingleVariableDeclaration parameter= (SingleVariableDeclaration) par;
 			Assignment newAssignment= ast.newAssignment();
@@ -671,7 +673,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	}
 
 	private void createFields(TypeDeclaration recursiveActionSubtype, AST ast) {
-		List recursiveMethodParameters= fMethodDeclaration.parameters();
+		List<ASTNode> recursiveMethodParameters= fMethodDeclaration.parameters();
 		for (Object par : recursiveMethodParameters) {
 			SingleVariableDeclaration parameter= (SingleVariableDeclaration) par;
 			
@@ -680,7 +682,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			
 			FieldDeclaration newFieldDeclaration= ast.newFieldDeclaration(newDeclarationFragment);
 			newFieldDeclaration.setType((Type) ASTNode.copySubtree(ast, parameter.getType()));
-			List modifiers= newFieldDeclaration.modifiers();
+			List<Modifier> modifiers= newFieldDeclaration.modifiers();
 			modifiers.add(ast.newModifier(ModifierKeyword.PRIVATE_KEYWORD));
 			
 			recursiveActionSubtype.bodyDeclarations().add(newFieldDeclaration);
@@ -688,11 +690,11 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		
 		if (!recursiveMethodReturnsVoid()) {
 			VariableDeclarationFragment newDeclarationFragment= ast.newVariableDeclarationFragment();
-			newDeclarationFragment.setName(ast.newSimpleName("result"));
+			newDeclarationFragment.setName(ast.newSimpleName("result")); //$NON-NLS-1$
 			
 			FieldDeclaration newFieldDeclaration= ast.newFieldDeclaration(newDeclarationFragment);
 			newFieldDeclaration.setType((Type) ASTNode.copySubtree(ast, fMethodDeclaration.getReturnType2()));
-			List modifiers= newFieldDeclaration.modifiers();
+			List<Modifier> modifiers= newFieldDeclaration.modifiers();
 			modifiers.add(ast.newModifier(ModifierKeyword.PRIVATE_KEYWORD));
 			
 			recursiveActionSubtype.bodyDeclarations().add(newFieldDeclaration);
@@ -713,17 +715,17 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		return null;
 	}
 	
-	private void createEdits(ICompilationUnit unit, ASTRewrite rewriter, List groups, ImportRewrite importRewrite) throws CoreException {
+	private void createEdits(ICompilationUnit unit, ASTRewrite rewriter, List<TextEditGroup> groups, ImportRewrite importRewrite) throws CoreException {
 		TextChange change= fChangeManager.get(unit);
 		MultiTextEdit root= new MultiTextEdit();
 		change.setEdit(root);
 		
 		TextEdit importEdit= importRewrite.rewriteImports(null);
-		TextChangeCompatibility.addTextEdit(fChangeManager.get(unit), "Update Imports", importEdit);
+		TextChangeCompatibility.addTextEdit(fChangeManager.get(unit), "Update Imports", importEdit); //$NON-NLS-1$
 		
 		root.addChild(rewriter.rewriteAST());
-		for (Iterator iter= groups.iterator(); iter.hasNext();) {
-			change.addTextEditGroup((TextEditGroup)iter.next());
+		for (Iterator<TextEditGroup> iter= groups.iterator(); iter.hasNext();) {
+			change.addTextEditGroup(iter.next());
 		}
 	}
 
@@ -747,7 +749,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		}
 		if (fMethodDeclaration.resolveBinding()== null) {
 			if (!processCompilerError(result, node))
-				result.addFatalError("type not resolveable"); 
+				result.addFatalError("type not resolveable"); //$NON-NLS-1$
 			return result;
 		}
 		fRewriter= ASTRewrite.create(fRoot.getAST());
@@ -763,7 +765,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	
 	private String getMappingErrorMessage() {
 		return Messages.format(
-			"Convert to FJTask cannot analyze selected method", 
+			"Convert to FJTask cannot analyze selected method",  //$NON-NLS-1$
 			new String[] {fMethod.getElementName()});
 	}
 
@@ -772,7 +774,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		if (messages.length== 0)
 			return false;
 		result.addFatalError(Messages.format(
-			"Convert to FJTask compile errors",  
+			"Convert to FJTask compile errors",  //$NON-NLS-1$
 			new String[] { fMethod.getElementName(), messages[0].getMessage()}));
 		return true;
 	}
@@ -794,17 +796,21 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		}
 
 		//TODO need to properly initialize the arguments so that this refactoring becomes recordable
-		final Map arguments= new HashMap();
-		String description= "Convert Recursive Method to FJTask";
-		String comment= "Convert Recursive Method to FJTask";
+		final Map<String, String> arguments= new HashMap<String, String>();
+		String description= "Convert Recursive Method to FJTask"; //$NON-NLS-1$
+		String comment= "Convert Recursive Method to FJTask"; //$NON-NLS-1$
 		
 		final JavaRefactoringDescriptor descriptor= new JavaRefactoringDescriptor(IJavaRefactorings.ENCAPSULATE_FIELD, project, description, comment, arguments, flags) {};
+		
+		arguments.put(JavaRefactoringDescriptorUtil.ATTRIBUTE_INPUT, JavaRefactoringDescriptorUtil.elementToHandle(project, fMethod));
+		arguments.put(JavaRefactoringDescriptorUtil.ATTRIBUTE_NAME, fMethod.getElementName());
+		//arguments.put(JavaRefactoringDescriptorUtil.ATTRIBUTE_ELEMENT + 1, JavaRefactoringDescriptorUtil.elementToHandle(project, nameForFJTaskSubtype));
 		
 		
 		final DynamicValidationRefactoringChange result= new DynamicValidationRefactoringChange(descriptor, getName());
 		TextChange[] changes= fChangeManager.getAllChanges();
 		pm.beginTask(NO_NAME, changes.length);
-		pm.setTaskName("ConvertToFJTask create changes");
+		pm.setTaskName("ConvertToFJTask create changes"); //$NON-NLS-1$
 		for (int i= 0; i < changes.length; i++) {
 			result.add(changes[i]);
 			pm.worked(1);
@@ -815,7 +821,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 
 	@Override
 	public String getName() {
-		return "Convert to FJTask";
+		return "Convert to FJTask"; //$NON-NLS-1$
 	}
 
 	public void setMethod(IMethod method) {
@@ -857,7 +863,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			IProblem problem= messages[i];
 			if (!isIgnorableProblem(problem)) {
 				result.addError(Messages.format(
-						"ConvertToAtomicInteger compiler errors update", 
+						"ConvertToAtomicInteger compiler errors update",  //$NON-NLS-1$
 						element.getElementName()), JavaStatusContext.create(element));
 				return;
 			}
@@ -866,29 +872,41 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 
 	public String suggestTaskName() {
 		String methodName= fMethod.getElementName();
-		return methodName.substring(0, 1).toUpperCase() + methodName.substring(1, methodName.length()) + "Impl";
+		return methodName.substring(0, 1).toUpperCase() + methodName.substring(1, methodName.length()) + "Impl"; //$NON-NLS-1$
 	}
 
 	public RefactoringStatus setSequentialThreshold(String text) {
-		if (text== null || "".equals(text))
-			return new RefactoringStatus().createErrorStatus("Sequential Threshold is Mandatory");
+		if (text== null || "".equals(text)) //$NON-NLS-1$
+			return new RefactoringStatus().createErrorStatus("Sequential Threshold is Mandatory"); //$NON-NLS-1$
 		sequentialThreshold= text;
 		return new RefactoringStatus();
 	}
 
 	public String getMethodNameAndSignature() {
-		String nameAndSignature= fMethodDeclaration.getName().getIdentifier() + "(";
-		List recursiveMethodParameters= fMethodDeclaration.parameters();
-		for (Iterator iterator= recursiveMethodParameters.iterator(); iterator
+		String nameAndSignature= fMethodDeclaration.getName().getIdentifier() + "("; //$NON-NLS-1$
+		List<ASTNode> recursiveMethodParameters= fMethodDeclaration.parameters();
+		for (Iterator<ASTNode> iterator= recursiveMethodParameters.iterator(); iterator
 				.hasNext();) {
 			SingleVariableDeclaration parameter= (SingleVariableDeclaration) iterator.next();
-			nameAndSignature += parameter.getType() + " " + parameter.getName().getIdentifier();
+			nameAndSignature += parameter.getType() + " " + parameter.getName().getIdentifier(); //$NON-NLS-1$
 			if (iterator.hasNext())
-				nameAndSignature +=", ";
+				nameAndSignature +=", "; //$NON-NLS-1$
 		}
-		nameAndSignature += ")";
+		nameAndSignature += ")"; //$NON-NLS-1$
 		return nameAndSignature;
 	}	
+	
+	private <T> List<T> castList(Class<? extends T> toCastTo, Collection<?> c) {
+		if(c.size() == 0) {
+			return null;
+		} else {
+			List<T> tempList = new ArrayList<T>(c.size());
+			for(Object objCast: c) {
+				tempList.add(toCastTo.cast(objCast));
+			}
+			return tempList;
+		}
+	}
 }
 
-//TODO Externalize strings, no calls to Sys.out.print, fix warnings
+//TODO Externalize translatable strings, fix warnings
