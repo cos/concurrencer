@@ -3,7 +3,7 @@ package object_out;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class C3 {
+public class TestCreateValueMethodNameWithOneArgument {
 	ConcurrentHashMap map2 = new ConcurrentHashMap();
 	
 	void doPutIfAbsentBlockWithExtractCreateValue() {

@@ -70,6 +70,8 @@ public class ConvertToConcurrentHashMapTests extends AbstractSelectionTestCase {
 			RefactoringStatus status= refactoring.checkAllConditions(new NullProgressMonitor());
 			assertTrue("should haves raised error message, since precondition is not met", status.hasError());
 		}
+		//assertTrue(refactoring!=null);
+		//performTest(unit, refactoring, INVALID_SELECTION, null, true);
 	}	
 	
 	private void initializePreferences() {
@@ -340,13 +342,14 @@ public class ConvertToConcurrentHashMapTests extends AbstractSelectionTestCase {
 		invalidTest("hm");
 	}
 	
+
 	public void testSideEffectsFieldAssignment() throws Exception {
 		invalidTest("hm");
 	}
 
 	// TODO
-//	public void testFailDueToCreateValueSideEffects() throws Exception {
-//		invalidTest("hm");
-//	}
+	/*public void testFailDueToCreateValueSideEffects() throws Exception {
+		invalidTest("hm");
+	}*/
 	
 }

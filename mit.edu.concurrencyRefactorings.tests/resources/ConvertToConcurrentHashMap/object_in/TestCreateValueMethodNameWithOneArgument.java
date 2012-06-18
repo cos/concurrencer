@@ -2,7 +2,7 @@ package object_in;
 
 import java.util.HashMap;
 
-public class C3 {
+public class TestCreateValueMethodNameWithOneArgument {
 	HashMap map2 = new HashMap();
 	
 	void doPutIfAbsentBlockWithExtractCreateValue() {
