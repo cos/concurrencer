@@ -116,10 +116,10 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		RefactoringStatus result= new RefactoringStatus();
 		fChangeManager.clear();
 		pm.beginTask("", 12); //$NON-NLS-1$
-		pm.setTaskName("Convert to FJTask checking preconditions"); //$NON-NLS-1$
+		pm.setTaskName(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_check_preconditions);
 		pm.worked(1);
 			
-		pm.setTaskName("ConvertToFJTask analyze preconditions");	//$NON-NLS-1$ 
+		pm.setTaskName(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_name);
 		
 		List<TextEditGroup> ownerDescriptions= new ArrayList<TextEditGroup>();
 		ICompilationUnit owner= fMethod.getCompilationUnit();
@@ -149,7 +149,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	}
 	
 	private Collection<TextEditGroup> reimplementOriginalRecursiveFunction() {
-		TextEditGroup gd= new TextEditGroup("Reimplement recursive method to invoke the FJTask framework"); //$NON-NLS-1$
+		TextEditGroup gd= new TextEditGroup(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_recursive_method);
 		
 		AST ast= fRoot.getAST();
 		
@@ -208,7 +208,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	private Collection<TextEditGroup> addCreateTaskClass(CompilationUnit root, RefactoringStatus result) {
 		
 		
-		TextEditGroup gd= new TextEditGroup("Create RecursiveAction Subtype"); //$NON-NLS-1$
+		TextEditGroup gd= new TextEditGroup(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_recursive_action);
 		
 		AST ast= root.getAST();
 		TypeDeclaration recursiveActionSubtype= ast.newTypeDeclaration();
@@ -243,13 +243,13 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		computeMethod.setName(ast.newSimpleName("compute")); //$NON-NLS-1$
 		computeMethod.modifiers().add(ast.newModifier(ModifierKeyword.PROTECTED_KEYWORD));
 		
-		final TextEditGroup editGroup= new TextEditGroup("generate compute() method"); //$NON-NLS-1$
+		final TextEditGroup editGroup= new TextEditGroup(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_generate_compute);
 		
 		Statement recursionBaseCaseBranch= identifyRecursionBaseCaseBranch(fMethodDeclaration.getBody());
 		if (recursionBaseCaseBranch== null) {
 			RefactoringStatus fatalError= new RefactoringStatus();
-			fatalError.addFatalError("Cannot identify the base " + //$NON-NLS-1$
-					"case for recursion. Maybe " + fMethod.getElementName() + " is not a recursive divide-and-conquer"); //$NON-NLS-1$ //$NON-NLS-2$
+			fatalError.addFatalError(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_recursion_error_1 
+							+ fMethod.getElementName() + ConcurrencyRefactorings.ConvertToFJTaskRefactoring_recursion_error_2);
 			result.merge(fatalError);
 			return;
 		}
@@ -344,7 +344,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 								scratchRewriter.replace(parentOfMethodCall, taskDeclStatement, editGroup);
 							}  
 							else
-								System.err.println("Scenario not handled yet: recursive method call is within " + parentOfMethodCall.toString() ); //$NON-NLS-1$
+								System.err.println(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_scenario_error + parentOfMethodCall.toString() );
 						}
 						else if (parentOfMethodCall instanceof ReturnStatement) {
 							ASTNode tempNode= parentOfMethodCall.getParent();
@@ -365,10 +365,10 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 								fMethodInvocationFlag= true;
 							}
 							else
-								System.err.println("Scenario not handled yet: recursive method call is within " + parentOfMethodCall.toString() ); //$NON-NLS-1$
+								System.err.println(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_scenario_error + parentOfMethodCall.toString() );
 						}
 						else 
-							System.err.println("Scenario not handled yet: recursive method call is within " + parentOfMethodCall.toString() ); //$NON-NLS-1$
+							System.err.println(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_scenario_error + parentOfMethodCall.toString() );
 					}
 					lastStatementWithRecursiveMethodInvocation.add(parentOfMethodCall);
 					
@@ -694,7 +694,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		change.setEdit(root);
 		
 		TextEdit importEdit= importRewrite.rewriteImports(null);
-		TextChangeCompatibility.addTextEdit(fChangeManager.get(unit), "Update Imports", importEdit); //$NON-NLS-1$
+		TextChangeCompatibility.addTextEdit(fChangeManager.get(unit), ConcurrencyRefactorings.ConvertToFJTaskRefactoring_update_imports, importEdit);
 		
 		root.addChild(rewriter.rewriteAST());
 		for (Iterator<TextEditGroup> iter= groups.iterator(); iter.hasNext();) {
@@ -731,7 +731,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		}
 		if (fMethodDeclaration.resolveBinding()== null) {
 			if (!processCompilerError(result, node))
-				result.addFatalError("type not resolveable"); //$NON-NLS-1$
+				result.addFatalError(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_type_error);
 			return result;
 		}
 		fRewriter= ASTRewrite.create(fRoot.getAST());
@@ -746,18 +746,16 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	}
 	
 	private String getMappingErrorMessage() {
-		return MessageFormat.format(
-			"Convert to FJTask cannot analyze selected method",  //$NON-NLS-1$
-			((Object[]) new String[] {fMethod.getElementName()}));
+		return MessageFormat.format(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_analyze_error,
+				((Object[]) new String[] {fMethod.getElementName()}));
 	}
 
 	private boolean processCompilerError(RefactoringStatus result, ASTNode node) {
 		Message[] messages= MessageUtil.getMessages(node, MessageUtil.INCLUDE_ALL_PARENTS);
 		if (messages.length== 0)
 			return false;
-		result.addFatalError(MessageFormat.format(
-			"Convert to FJTask compile errors",  //$NON-NLS-1$
-			((Object[]) new String[] { fMethod.getElementName(), messages[0].getMessage()})));
+		result.addFatalError(MessageFormat.format(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_compile_error,
+				((Object[]) new String[] { fMethod.getElementName(), messages[0].getMessage()})));
 		return true;
 	}
 	
@@ -779,10 +777,10 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 
 		//TODO need to properly initialize the arguments so that this refactoring becomes recordable
 		final Map<String, String> arguments= new HashMap<String, String>();
-		String description= "Convert Recursive Method to FJTask"; //$NON-NLS-1$
-		String comment= "Convert Recursive Method to FJTask"; //$NON-NLS-1$
+		String description= ConcurrencyRefactorings.ConvertToFJTaskRefactoring_name_user;
+		String comment= ConcurrencyRefactorings.ConvertToFJTaskRefactoring_name_user;
 		
-		final JavaRefactoringDescriptor descriptor= new JavaRefactoringDescriptor(IJavaRefactorings.ENCAPSULATE_FIELD, project, description, comment, arguments, flags) {};
+		final JavaRefactoringDescriptor descriptor= new JavaRefactoringDescriptor(IJavaRefactorings.ENCAPSULATE_FIELD, project, description, comment, arguments, flags) {};  //TODO See below as well
 		
 		arguments.put(JavaRefactoringDescriptorUtil.ATTRIBUTE_INPUT, JavaRefactoringDescriptorUtil.elementToHandle(project, fMethod));  //TODO Use JavaRefactoringDescriptor instead but it is protected
 		arguments.put(JavaRefactoringDescriptorUtil.ATTRIBUTE_NAME, fMethod.getElementName());
@@ -792,7 +790,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		final DynamicValidationRefactoringChange result= new DynamicValidationRefactoringChange(descriptor, getName());
 		TextChange[] changes= fChangeManager.getAllChanges();
 		pm.beginTask(NO_NAME, changes.length);
-		pm.setTaskName("ConvertToFJTask create changes"); //$NON-NLS-1$
+		pm.setTaskName(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_create_changes);
 		for (int i= 0; i < changes.length; i++) {
 			result.add(changes[i]);
 			pm.worked(1);
@@ -803,7 +801,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 
 	@Override
 	public String getName() {
-		return "Convert to FJTask"; //$NON-NLS-1$
+		return ConcurrencyRefactorings.ConvertToFJTaskRefactoring_name_official;
 	}
 
 	public void setMethod(IMethod method) {
