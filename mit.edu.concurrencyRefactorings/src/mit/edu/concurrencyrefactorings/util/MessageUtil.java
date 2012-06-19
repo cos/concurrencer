@@ -7,8 +7,6 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Message;
 
-
-
 public class MessageUtil {
 	
 	public static final int NODE_ONLY=				0;
