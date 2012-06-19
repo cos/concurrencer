@@ -89,29 +89,6 @@ import org.eclipse.text.edits.TextEditGroup;
 
 public class ConvertToFJTaskRefactoring extends Refactoring {
 
-//	private final class StatementVisitor extends ASTVisitor {  TODO What is the point of this class?
-//		private final List<Statement> statements;
-//
-//		private StatementVisitor(List<Statement> statementsInOriginalMethod) {
-//			this.statements= statementsInOriginalMethod;
-//		}
-//
-//		public boolean visit(ExpressionStatement node) {
-//			statements.add(node);
-//			return false;
-//		}
-//
-//		public boolean visit(VariableDeclarationStatement node) {
-//			statements.add(node);
-//			return false;
-//		}
-//		
-//		public boolean visit(ReturnStatement node) {
-//			statements.add(node);
-//			return false;
-//		}
-//	}
-
 	private static final String NO_NAME= ""; //$NON-NLS-1$
 	private IMethod fMethod;
 	private CompilationUnit fRoot;
@@ -119,7 +96,6 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	private ASTRewrite fRewriter;
 	private TextChangeManager fChangeManager;
 	private ImportRewrite fImportRewrite;
-//	private static final String LINKED_NAME= "name"; //$NON-NLS-1$
 	private String nameForFJTaskSubtype= ""; //$NON-NLS-1$
 	private String sequentialThreshold;
 	private boolean fInfixExpressionFlag= false;
@@ -145,12 +121,10 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			
 		pm.setTaskName("ConvertToFJTask analyze preconditions");	//$NON-NLS-1$ 
 		
-	//	ITypeBinding declaringClass= 
-	//		((AbstractTypeDeclaration)ASTNodes.getParent(fMethodDeclaration, AbstractTypeDeclaration.class)).resolveBinding();
 		List<TextEditGroup> ownerDescriptions= new ArrayList<TextEditGroup>();
 		ICompilationUnit owner= fMethod.getCompilationUnit();
 		
-		fImportRewrite= CodeStyleConfiguration.createImportRewrite(fRoot, true); //StubUtility.createImportRewrite(fRoot, true);
+		fImportRewrite= CodeStyleConfiguration.createImportRewrite(fRoot, true);
 		
 		checkCompileErrors(result, fRoot, owner);
 		
@@ -331,7 +305,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			public boolean visit(MethodInvocation methodCall) {
 				IMethodBinding bindingForMethodCall= methodCall.resolveMethodBinding();
 				IMethodBinding bindingForMethodDeclaration= fMethodDeclaration.resolveBinding();
-				if (bindingForMethodCall.isEqualTo(bindingForMethodDeclaration)) { //Bindings.equals(bindingForMethodDeclaration, bindingForMethodCall)) {
+				if (bindingForMethodCall.isEqualTo(bindingForMethodDeclaration)) {
 					String codeForTaskDecl= nameForFJTaskSubtype + " task" + ++taskNumber[0] +  //$NON-NLS-1$
 				    " = new " + nameForFJTaskSubtype + "("; //$NON-NLS-1$ //$NON-NLS-2$
 					String methodArguments= ""; //$NON-NLS-1$
@@ -485,9 +459,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			TextEdit edits= scratchRewriter.rewriteAST();
 			IDocument scratchDocument= new Document(((ICompilationUnit)fRoot.getJavaElement()).getSource());
 			try {
-				//System.out.println(scratchDocument.get());
 				edits.apply(scratchDocument);
-				//System.out.println(scratchDocument.get());
 				
 				ASTParser parser= ASTParser.newParser(AST.JLS4);
 				parser.setSource(scratchDocument.get().toCharArray());
@@ -630,7 +602,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			public boolean visit(MethodInvocation methodCall) {
 				IMethodBinding bindingForMethodCall= methodCall.resolveMethodBinding();
 				IMethodBinding bindingForMethodDeclaration= fMethodDeclaration.resolveBinding();
-				if (bindingForMethodCall.isEqualTo(bindingForMethodDeclaration)) { //Bindings.equals(bindingForMethodDeclaration, bindingForMethodCall)) {
+				if (bindingForMethodCall.isEqualTo(bindingForMethodDeclaration)) {
 					result[0]= true;
 				}
 				return true;
@@ -638,21 +610,6 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		});
 		return result[0];
 	}
-	
-//	private List<MethodInvocation> getRecursiveCalls(Statement statement) {
-//		final List<MethodInvocation> result= new ArrayList<MethodInvocation>();
-//		statement.accept(new ASTVisitor() {
-//			public boolean visit(MethodInvocation methodCall) {
-//				IMethodBinding bindingForMethodCall= methodCall.resolveMethodBinding();
-//				IMethodBinding bindingForMethodDeclaration= fMethodDeclaration.resolveBinding();
-//				if (Bindings.equals(bindingForMethodCall, bindingForMethodDeclaration)) {
-//					result.add(methodCall);
-//				}
-//				return false;
-//			}
-//		});
-//		return result;
-//	}
 	
 	private void createContructor(TypeDeclaration recursiveActionSubtype, AST ast) {
 		
