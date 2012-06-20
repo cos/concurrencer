@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import mit.edu.concurrencyrefactorings.util.ChecksAndResources;
+import mit.edu.concurrencyrefactorings.util.CompilationUnitSourceContext;
 import mit.edu.concurrencyrefactorings.util.MessageUtil;
 import mit.edu.concurrencyrefactorings.util.ModifierRewrite;
 import mit.edu.concurrencyrefactorings.util.ResourceUtil;
@@ -69,7 +70,6 @@ import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jdt.core.refactoring.IJavaRefactorings;
 import org.eclipse.jdt.core.refactoring.descriptors.JavaRefactoringDescriptor;
 import org.eclipse.jdt.internal.corext.refactoring.JavaRefactoringDescriptorUtil;
-import org.eclipse.jdt.internal.corext.refactoring.base.JavaStatusContext;
 import org.eclipse.jdt.internal.corext.refactoring.changes.DynamicValidationRefactoringChange;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.ui.CodeStyleConfiguration;
@@ -842,9 +842,8 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		for (int i= 0; i < messages.length; i++) {
 			IProblem problem= messages[i];
 			if (!isIgnorableProblem(problem)) {
-				result.addError(MessageFormat.format(
-						"ConvertToAtomicInteger compiler errors update",  //$NON-NLS-1$
-						(new Object[] { element.getElementName()})), JavaStatusContext.create(element));
+				result.addError(MessageFormat.format(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_compile_error_update,
+						(new Object[] { element.getElementName()})), new CompilationUnitSourceContext(element, null));
 				return;
 			}
 		}
@@ -857,7 +856,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 
 	public RefactoringStatus setSequentialThreshold(String text) {
 		if (text== null || "".equals(text)) //$NON-NLS-1$
-			return RefactoringStatus.createErrorStatus("Sequential Threshold is Mandatory"); //$NON-NLS-1$
+			return RefactoringStatus.createErrorStatus(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_sequential_req);
 		sequentialThreshold= text;
 		return new RefactoringStatus();
 	}

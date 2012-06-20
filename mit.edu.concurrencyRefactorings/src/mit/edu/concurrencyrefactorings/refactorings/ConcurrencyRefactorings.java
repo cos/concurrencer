@@ -25,9 +25,11 @@ public final class ConcurrencyRefactorings extends NLS {
 	public static String ConvertToFJTaskRefactoring_type_error;
 	public static String ConvertToFJTaskRefactoring_analyze_error;
 	public static String ConvertToFJTaskRefactoring_compile_error;
+	public static String ConvertToFJTaskRefactoring_compile_error_update;
 	public static String ConvertToFJTaskRefactoring_name_user;
 	public static String ConvertToFJTaskRefactoring_create_changes;
 	public static String ConvertToFJTaskRefactoring_name_official;
+	public static String ConvertToFJTaskRefactoring_sequential_req;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ConcurrencyRefactorings.class);
