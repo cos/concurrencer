@@ -32,7 +32,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ITrackedNodePosition;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
-import org.eclipse.jdt.internal.corext.dom.ASTNodeFactory;
 import org.eclipse.jdt.internal.corext.fix.LinkedProposalPositionGroup;
 import org.eclipse.jdt.internal.corext.fix.LinkedProposalPositionGroup.PositionInformation;
 import org.eclipse.text.edits.TextEditGroup;
@@ -209,7 +208,7 @@ public class ModifierRewrite {
 		}
 
 		// add modifiers
-		List<Modifier> newNodes= ASTNodeFactory.newModifiers(fAst, newModifiers);
+		List<Modifier> newNodes= fAst.newModifiers(newModifiers);
 		for (int i= 0; i < newNodes.size(); i++) {
 			Modifier curr= newNodes.get(i);
 			if ((curr.getKeyword().toFlagValue() & VISIBILITY_MODIFIERS) != 0) {
