@@ -89,14 +89,14 @@ import org.eclipse.text.edits.TextEditGroup;
 
 public class ConvertToFJTaskRefactoring extends Refactoring {
 
-	private static final String NO_NAME= ""; //$NON-NLS-1$
+	private static final String NO_NAME= ConcurrencyRefactorings.ConcurrencyRefactorings_empty_string;
 	private IMethod fMethod;
 	private CompilationUnit fRoot;
 	private MethodDeclaration fMethodDeclaration;
 	private ASTRewrite fRewriter;
 	private TextChangeManager fChangeManager;
 	private ImportRewrite fImportRewrite;
-	private String nameForFJTaskSubtype= ""; //$NON-NLS-1$
+	private String nameForFJTaskSubtype= ConcurrencyRefactorings.ConcurrencyRefactorings_empty_string;
 	private String sequentialThreshold;
 	private boolean fInfixExpressionFlag= false;
 	private boolean fMethodInvocationFlag= false;
@@ -115,7 +115,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 		
 		RefactoringStatus result= new RefactoringStatus();
 		fChangeManager.clear();
-		pm.beginTask("", 12); //$NON-NLS-1$
+		pm.beginTask(ConcurrencyRefactorings.ConcurrencyRefactorings_empty_string, 12);
 		pm.setTaskName(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_check_preconditions);
 		pm.worked(1);
 			
@@ -308,7 +308,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 				if (bindingForMethodCall.isEqualTo(bindingForMethodDeclaration)) {
 					String codeForTaskDecl= nameForFJTaskSubtype + " task" + ++taskNumber[0] +  //$NON-NLS-1$
 				    " = new " + nameForFJTaskSubtype + "("; //$NON-NLS-1$ //$NON-NLS-2$
-					String methodArguments= ""; //$NON-NLS-1$
+					String methodArguments= ConcurrencyRefactorings.ConcurrencyRefactorings_empty_string;
 					List<Expression> arguments= methodCall.arguments();
 					for (Iterator<Expression> iterator= arguments.iterator(); iterator
 							.hasNext();) {
@@ -526,7 +526,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	private boolean methodsHaveSameSignature(
 			MethodDeclaration methodDeclaration,
 			MethodDeclaration methodDeclaration2) {
-		String methodArguments= ""; //$NON-NLS-1$
+		String methodArguments= ConcurrencyRefactorings.ConcurrencyRefactorings_empty_string;
 		List<ASTNode> arguments= methodDeclaration.parameters();
 		for (Iterator<ASTNode> iterator= arguments.iterator(); iterator
 				.hasNext();) {
@@ -537,7 +537,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			}
 		}
 		
-		String methodArguments2= ""; //$NON-NLS-1$
+		String methodArguments2= ConcurrencyRefactorings.ConcurrencyRefactorings_empty_string;
 		arguments= methodDeclaration2.parameters();
 		for (Iterator<ASTNode> iterator= arguments.iterator(); iterator
 				.hasNext();) {
@@ -855,7 +855,7 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 	}
 
 	public RefactoringStatus setSequentialThreshold(String text) {
-		if (text== null || "".equals(text)) //$NON-NLS-1$
+		if (text== null || ConcurrencyRefactorings.ConcurrencyRefactorings_empty_string.equals(text))
 			return RefactoringStatus.createErrorStatus(ConcurrencyRefactorings.ConvertToFJTaskRefactoring_sequential_req);
 		sequentialThreshold= text;
 		return new RefactoringStatus();
@@ -899,9 +899,9 @@ public class ConvertToFJTaskRefactoring extends Refactoring {
 			}
 		}
 		options.put(JavaCore.COMPILER_PB_MAX_PER_UNIT, "0"); //$NON-NLS-1$
-		options.put(JavaCore.COMPILER_TASK_TAGS, ""); //$NON-NLS-1$
+		options.put(JavaCore.COMPILER_TASK_TAGS, ConcurrencyRefactorings.ConcurrencyRefactorings_empty_string);
 		return options;
 	}
 }
 
-//TODO Externalize translatable strings, fix warnings
+//TODO fix warnings

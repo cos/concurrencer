@@ -13,6 +13,8 @@ public final class ConcurrencyRefactorings extends NLS {
 		// Do not instantiate
 	}
 	
+	public static String ConcurrencyRefactorings_empty_string;
+	
 	public static String ConvertToFJTaskRefactoring_check_preconditions;
 	public static String ConvertToFJTaskRefactoring_name;
 	public static String ConvertToFJTaskRefactoring_recursive_method;
