@@ -21,8 +21,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.corext.CorextMessages;
 import org.eclipse.jdt.internal.corext.refactoring.RefactoringCoreMessages;
 import org.eclipse.jdt.internal.ui.IJavaStatusConstants;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.ui.JavaElementLabels;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.osgi.util.TextProcessor;
 
@@ -183,7 +183,7 @@ public class ChecksAndResources {
 	}
 	
 	private static IStatus addModified(IStatus status, IFile file) {
-		IStatus entry= new Status(IStatus.ERROR, JavaPlugin.getPluginId(),
+		IStatus entry= new Status(IStatus.ERROR, JavaUI.ID_PLUGIN,
 			IJavaStatusConstants.VALIDATE_EDIT_CHANGED_CONTENT,
 			MessageFormat.format(CorextMessages.Resources_fileModified, markLTR(file.getFullPath().makeRelative().toString())),
 			null);
@@ -193,7 +193,7 @@ public class ChecksAndResources {
 			((MultiStatus)status).add(entry);
 			return status;
 		} else {
-			MultiStatus result= new MultiStatus(JavaPlugin.getPluginId(),
+			MultiStatus result= new MultiStatus(JavaUI.ID_PLUGIN,
 				IJavaStatusConstants.VALIDATE_EDIT_CHANGED_CONTENT,
 				CorextMessages.Resources_modifiedResources, null);
 			result.add(status);
