@@ -1,8 +1,7 @@
 package object_out;
 
-import jsr166y.forkjoin.ForkJoinExecutor;
-import jsr166y.forkjoin.ForkJoinPool;
-import jsr166y.forkjoin.RecursiveAction;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 
 public class SequentialMergeSort {
 
@@ -38,7 +37,7 @@ public class SequentialMergeSort {
 	 */
 	private int[] sort(int[] whole) {
 		int processorCount = Runtime.getRuntime().availableProcessors();
-		ForkJoinExecutor pool = new ForkJoinPool(processorCount);
+		ForkJoinPool pool = new ForkJoinPool(processorCount);
 		SortImpl aSortImpl = new SortImpl(whole);
 		pool.invoke(aSortImpl);
 		return aSortImpl.result;
@@ -61,7 +60,7 @@ public class SequentialMergeSort {
 				System.arraycopy(whole, left.length, right, 0, right.length);
 				SortImpl task1 = new SortImpl(left);
 				SortImpl task2 = new SortImpl(right);
-				forkJoin(task1, task2);
+				invokeAll(task1, task2);
 				left = task1.result;
 				right = task2.result;
 				merge(left, right, whole);

@@ -2,20 +2,16 @@ package mit.edu.concurrencyrefactorings.tests;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
-import mit.edu.concurrencyrefactorings.refactorings.ConvertToAtomicIntegerRefactoring;
 import mit.edu.concurrencyrefactorings.refactorings.ConvertToFJTaskRefactoring;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.corext.refactoring.Checks;
 import org.eclipse.jdt.ui.tests.refactoring.infra.AbstractSelectionTestCase;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
@@ -39,7 +35,7 @@ public class ConvertToFJTaskTests extends AbstractSelectionTestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		fIsPreDeltaTest= true;
+		fIsPreDeltaTest= false;  //TODO Why does this fail when true
 	}
 
 	protected String getResourceLocation() {
@@ -137,9 +133,38 @@ public class ConvertToFJTaskTests extends AbstractSelectionTestCase {
 	public void testQuickSort() throws Exception {
 		objectTest("quicksort", "right - left < 10");
 	}
+	
 //	public void testReimplementRecursiveMethod() throws Exception {
 //		objectTest("method");
 //	}
+	
+	public void testFibonacci() throws Exception {
+		objectTest("fibonacci", "end < 10");
+	}
+	
+	public void testFibonacciCombination() throws Exception {
+		objectTest("fibonacciCombination", "end < 10");
+	}
+	
+	public void testSum() throws Exception {
+		objectTest("recursionSum", "end < 5");
+	}
+	
+	public void testSumCombination() throws Exception {
+		objectTest("recursionSumCombination", "end < 5");
+	}
+	
+	public void testCreateMultipleTasks() throws Exception {
+		objectTest("method", "num < 10");
+	}
+	
+	public void testReturnMultipleTasks() throws Exception {
+		objectTest("method", "num < 10");
+	}
+	
+	public void testMethodMultipleTasks() throws Exception {
+		objectTest("method", "num < 10");
+	}
 	
 	public void testBaseCaseDoesNotHaveReturn() throws Exception {
 		invalidTest("method");

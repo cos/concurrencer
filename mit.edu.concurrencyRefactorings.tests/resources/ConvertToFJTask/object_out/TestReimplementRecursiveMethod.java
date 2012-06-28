@@ -1,13 +1,12 @@
-package object_in;
+package object_out;
 
-import jsr166y.forkjoin.ForkJoinExecutor;
-import jsr166y.forkjoin.ForkJoinPool;
-import jsr166y.forkjoin.RecursiveAction;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 
 public class TestReimplementRecursiveMethod {
 	
 	public void method(int[] array) {
-		ForkJoinExecutor pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
 		Classmethod aClassmethod = new Classmethod(array);
 		pool.invoke(aClassmethod);
 	}
