@@ -1,8 +1,7 @@
 package object_out;
 
-import jsr166y.forkjoin.ForkJoinExecutor;
-import jsr166y.forkjoin.ForkJoinPool;
-import jsr166y.forkjoin.RecursiveAction;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 
 public class MaxSumTest {
 
@@ -44,7 +43,7 @@ public class MaxSumTest {
     private static int maxSumRec( int [ ] a, int left, int right )
     {
 		int processorCount = Runtime.getRuntime().availableProcessors();
-		ForkJoinExecutor pool = new ForkJoinPool(processorCount);
+		ForkJoinPool pool = new ForkJoinPool(processorCount);
 		MaxSumRecImpl aMaxSumRecImpl = new MaxSumRecImpl(a, left, right);
 		pool.invoke(aMaxSumRecImpl);
 		return aMaxSumRecImpl.result;
@@ -70,7 +69,7 @@ public class MaxSumTest {
 			}
 			MaxSumRecImpl task1 = new MaxSumRecImpl(a, left, center);
 			MaxSumRecImpl task2 = new MaxSumRecImpl(a, center + 1, right);
-			forkJoin(task1, task2);
+			invokeAll(task1, task2);
 			int maxLeftSum = task1.result;
 			int maxRightSum = task2.result;
 			for (int i = center; i >= left; i--) {

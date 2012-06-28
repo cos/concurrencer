@@ -1,14 +1,13 @@
 package object_out;
 
-import jsr166y.forkjoin.ForkJoinExecutor;
-import jsr166y.forkjoin.ForkJoinPool;
-import jsr166y.forkjoin.RecursiveAction;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 
 public class CreateTypeDeclaration {
 	
 	public void method(int[] array, int start, int end) {
 		int processorCount = Runtime.getRuntime().availableProcessors();
-		ForkJoinExecutor pool = new ForkJoinPool(processorCount);
+		ForkJoinPool pool = new ForkJoinPool(processorCount);
 		MethodImpl aMethodImpl = new MethodImpl(array, start, end);
 		pool.invoke(aMethodImpl);
 	}
@@ -29,7 +28,7 @@ public class CreateTypeDeclaration {
 			} else {
 				MethodImpl task1 = new MethodImpl(array, 0, 1);
 				MethodImpl task2 = new MethodImpl(new int[]{1, 2, 3}, 0, 3);
-				forkJoin(task1, task2);
+				invokeAll(task1, task2);
 			}
 		}
 		public void method(int[] array, int start, int end) {

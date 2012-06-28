@@ -1,6 +1,6 @@
 package object_in;
 
-public class TestCreateResultFied {
+public class TestCreateResultField {
 	
 	public int method(int[] array, int start, int end) {
 		if (array.length == 0) {
